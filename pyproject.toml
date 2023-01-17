@@ -9,7 +9,7 @@ license = {text = "Apache-2.0"}
 authors = [
     { name="Rogier van Staveren" }
 ]
-description = "Library with protocol support for different 433mhz switches and weather stations for the RFControl Arduino library."
+description = "Library with protocol support for different 433MHz switches and weather stations for the RFControl Arduino library."
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
