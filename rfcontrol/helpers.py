@@ -30,13 +30,6 @@ def binary2pulses(binary: str, binary2pulses_mapping) -> str:
     return pulses
 
 
-def map_by_array(data: str, mapping):
-    result = ""
-    for s in data:
-        result += str(mapping[int(s)])
-    return result
-
-
 def hex_checksum(data):
     checksum = 0
     number = int(data[0:32][::-1])

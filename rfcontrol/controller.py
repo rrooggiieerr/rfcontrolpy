@@ -85,16 +85,12 @@ def sort_indices(array: []):
     """
     Sort the indexes of an array by order of element value.
     """
-    element_index_map = []
-    for i, element in enumerate(array):
-        element_index_map.append([element, i])
-    element_index_map.sort()
+    sorted_indices = [
+        i for i, _ in sorted(enumerate(array), key=lambda x: x[1])
+    ]
+    # logger.debug("sorted indices: %s", sorted_indices)
 
-    indices = []
-    for item in element_index_map:
-        indices.append(item[1])
-
-    return indices
+    return sorted_indices
 
 
 def compress_timings(timings: []):
@@ -133,24 +129,30 @@ def prepare_compressed_pulses(input: str):
     # The first 8 numbers are the pulse length and the last string is the pulse sequence
     parts = input.split(" ")
     pulse_lengths = [int(i) for i in parts[0:7]]
-    pulses = parts[8]
+    pulse_sequence = parts[8]
 
     # Now lets filter out 0 pulses
     pulse_lengths = list(filter(lambda pulse_length: pulse_length > 0, pulse_lengths))
 
     # Next sort the pulses from short to long and update indices in pulses.
-    return sort_compressed_pulses(pulse_lengths, pulses)
+    return sort_compressed_pulses(pulse_lengths, pulse_sequence)
 
 
-def sort_compressed_pulses(pulse_lengths: [], pulses: str):
+def sort_compressed_pulses(pulse_lengths: [], pulse_sequence: str):
     """
     Sort the pulses from short to long and updates indices in pulses.
     """
     sorted_indices = sort_indices(pulse_lengths)
     pulse_lengths.sort()
-    pulses = helpers.map_by_array(pulses, sorted_indices)
 
-    return (pulse_lengths, pulses)
+    reindexed_pulse_sequence = ""
+    for c in pulse_sequence:
+        reindexed_pulse_sequence += str(sorted_indices.index(int(c)))
+    # logger.debug("reindexed pulse sequence: %s", reindexed_pulse_sequence)
+    
+    pulse_sequence = reindexed_pulse_sequence
+
+    return (pulse_lengths, pulse_sequence)
 
 
 def fix_pulses(pulse_lengths: [], pulse_sequence: str):
@@ -193,6 +195,15 @@ def decode_pulses(pulse_lengths: [], pulse_sequence: str):
     """
     Decode pulse sequence to protocol
     """
+    # Filter out 0 length pulses
+    pulse_lengths = [i for i in pulse_lengths if i > 0]
+    # logger.debug("Non 0 pulse lengths: %s", pulse_lengths)
+    
+    pulse_lengths, pulse_sequence = sort_compressed_pulses(pulse_lengths, pulse_sequence)
+
+    return _decode_pulses(pulse_lengths, pulse_sequence)
+
+def _decode_pulses(pulse_lengths: [], pulse_sequence: str):
     results = []
     for protocol in protocols:
         if does_protocol_match(pulse_lengths, pulse_sequence, protocol):
@@ -206,7 +217,7 @@ def decode_pulses(pulse_lengths: [], pulse_sequence: str):
     fixed_pulses = fix_pulses(pulse_lengths, pulse_sequence)
     if fixed_pulses is not None:
         # We have fixes so try again with the fixed pulse lengths...
-        results.extend(decode_pulses(fixed_pulses[0], fixed_pulses[1]))
+        results.extend(_decode_pulses(fixed_pulses[0], fixed_pulses[1]))
 
     return results
 
