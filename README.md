@@ -129,6 +129,5 @@ Adding a new Protocol
 ## Protocol development
 
 1. Create a new protocol file (like the others) in `rfcontrol/protocols/`.
-2. Add its name in the `rfcontrol/controller.py` file to the `protocols` list.
-3. Add a test case in `tests/protocols` with the data from the Arduino.
-4. Adapt the protocol file, so that the test get passed.
+2. Add a test case in `tests/protocols` with the data from the Arduino.
+3. Adapt the protocol file, so that the test get passed.

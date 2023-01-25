@@ -1,66 +1,20 @@
 """
 Python port of the original CoffeeScript/nodejs code
 """
+import glob
 import logging
+from os.path import basename, dirname, isfile, join
 
-from rfcontrol import helpers
-from rfcontrol.protocols import (
-    dimmer1,
-    generic,
-    generic2,
-    switch1,
-    switch2,
-    switch3,
-    switch4,
-    switch5,
-    switch6,
-    switch7,
-    switch8,
-    switch10,
-    switch11,
-    switch25,
-    weather7,
-    weather19,
-)
-
-protocols = (
-    # weather1, weather2, weather3, weather4, weather5, weather6,
-    weather7,
-    # weather8, weather9, weather10, weather11, weather12, weather13, weather14,
-    # weather15, weather16, weather17, weather18,
-    weather19,  # weather20, weather21
-    switch1,
-    switch2,
-    switch3,
-    switch4,
-    switch5,
-    switch6,
-    switch7,
-    switch8,
-    # switch9,
-    switch10,
-    switch11,
-    # switch12, switch13, switch14, switch15, switch16,
-    # switch17, switch18, switch19, switch20, switch21, switch22, switch23, switch24,
-    switch25,
-    # switch26, switch27, switch28, switch29, switch30, switch31, switch32
-    # switch33, switch34
-    # rolling1
-    dimmer1,
-    # dimmer2
-    # pir1, pir2, pir3, pir4, pir5, pir6
-    # contact1, contact2, contact3, contact4
-    generic,
-    generic2,
-    # alarm1, alarm2, alarm3
-    # led1, led2, led3, led4
-    # doorbell1, doorbell2, doorbell3,
-    # awning1, awning2
-    # shutter1, shutter3, shutter4, shutter5
-    # rawswitch, rawshutter
-)
+import rfcontrol.protocols
+from rfcontrol.protocols import *
 
 logger = logging.getLogger(__name__)
+
+protocols = [
+    getattr(rfcontrol.protocols, basename(f)[:-3])
+    for f in glob.glob(join(dirname(__file__), "protocols/*.py"))
+    if isfile(f) and not basename(f).startswith("_")
+]
 
 
 def does_protocol_match(pulse_lengths, pulse_sequence, protocol: str) -> bool:
@@ -252,8 +206,4 @@ def get_protocol(protocol_name: str) -> str | None:
     """
     Get protocol with given name.
     """
-    for _protocol in protocols:
-        if _protocol.name is protocol_name:
-            return _protocol
-
-    return None
+    return getattr(rfcontrol.protocols, protocol_name, None)

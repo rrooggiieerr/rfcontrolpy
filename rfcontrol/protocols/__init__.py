@@ -3,6 +3,15 @@ RF Protocols implement (part of) the protocols of the original CoffeeScript/node
 https://github.com/pimatic/rfcontroljs/tree/master/src/protocols
 """
 
+import glob
+from os.path import basename, dirname, isfile, join
+
+__all__ = [
+    basename(f)[:-3]
+    for f in glob.glob(join(dirname(__file__), "*.py"))
+    if isfile(f) and not basename(f).startswith("_")
+]
+
 
 class RFControlProtocolTypes:
     ALARM = "alarm"
