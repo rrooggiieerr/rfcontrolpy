@@ -85,9 +85,7 @@ def sort_indices(array: []):
     """
     Sort the indexes of an array by order of element value.
     """
-    sorted_indices = [
-        i for i, _ in sorted(enumerate(array), key=lambda x: x[1])
-    ]
+    sorted_indices = [i for i, _ in sorted(enumerate(array), key=lambda x: x[1])]
     # logger.debug("sorted indices: %s", sorted_indices)
 
     return sorted_indices
@@ -149,7 +147,7 @@ def sort_compressed_pulses(pulse_lengths: [], pulse_sequence: str):
     for c in pulse_sequence:
         reindexed_pulse_sequence += str(sorted_indices.index(int(c)))
     # logger.debug("reindexed pulse sequence: %s", reindexed_pulse_sequence)
-    
+
     pulse_sequence = reindexed_pulse_sequence
 
     return (pulse_lengths, pulse_sequence)
@@ -198,10 +196,13 @@ def decode_pulses(pulse_lengths: [], pulse_sequence: str):
     # Filter out 0 length pulses
     pulse_lengths = [i for i in pulse_lengths if i > 0]
     # logger.debug("Non 0 pulse lengths: %s", pulse_lengths)
-    
-    pulse_lengths, pulse_sequence = sort_compressed_pulses(pulse_lengths, pulse_sequence)
+
+    pulse_lengths, pulse_sequence = sort_compressed_pulses(
+        pulse_lengths, pulse_sequence
+    )
 
     return _decode_pulses(pulse_lengths, pulse_sequence)
+
 
 def _decode_pulses(pulse_lengths: [], pulse_sequence: str):
     results = []
