@@ -1,3 +1,6 @@
+"""
+Use this skeleton protocol to implement new protocols
+"""
 import logging
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
@@ -11,7 +14,7 @@ pulses2binary_mapping = []
 # Mapping for encoding
 binary2pulses_mapping = {}
 
-name = "dimmer1"
+name = "skeleton"
 type = RFControlProtocolTypes.DIMMER
 brands = []
 pulse_lengths = []
