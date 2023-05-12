@@ -17,7 +17,7 @@ protocols = [
 ]
 
 
-def does_protocol_match(pulse_lengths, pulse_sequence, protocol: str) -> bool:
+def does_protocol_match(pulse_lengths, pulse_sequence, protocol) -> bool:
     """
     Test if a protocol matches the pulse lengths and pulse sequence
     """
