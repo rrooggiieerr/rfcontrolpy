@@ -80,7 +80,7 @@ def prepare_compressed_pulses(input: str):
     # 268 2632 1282 10168 0 0 0 0 010002000202000002000200020200020002...
     # The first 8 numbers are the pulse length and the last string is the pulse sequence
     parts = input.split(" ")
-    pulse_lengths = [int(i) for i in parts[0:7]]
+    pulse_lengths = [int(i) for i in parts[0:8]]
     pulse_sequence = parts[8]
 
     # Now lets filter out 0 pulses
