@@ -7,37 +7,36 @@ logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
-    ["10", "0"],  # Binary 0
-    ["01", "1"],  # Binary 1
+    ["01", "0"],  # Binary 0
+    ["10", "1"],  # Binary 1
     ["02", ""],  # Footer
 ]
 
 # Mapping for encoding
 binary2pulses_mapping = {}
 
-name = "pir3"
+name = "pir6"
 type = RFControlProtocolTypes.PIR
-brands = ["Inter-Union"]
-pulse_lengths = [496, 1471, 6924]
-pulse_count = 66
+brands = ["Zanbo (ZABC86-1)", "Unknown (OSW-1-3 and OTW-1-3)"]
+pulse_lengths = [288, 864, 8964]
+pulse_count = 50
 
 
 def decode(pulses):
     # Pulses is something like:
-    # 011010011010010110101010010101101010011001100110100101100101101002
+    # 
 
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
     # Binary is now something like:
-    # 10010011000011100010101001101100
+    # 001100001110100011000011
 
     if binary is None:
         return None
 
     # Now we extract the data from that string.
     decoded = {
-        "id": int(binary[0:16], 2),
-        "unit": int(binary[16:32], 2),
+        "id": int(binary[2:25], 2),
         "state": True,
     }
     logger.debug(decoded)

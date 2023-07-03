@@ -15,29 +15,31 @@ pulses2binary_mapping = [
 # Mapping for encoding
 binary2pulses_mapping = {}
 
-name = "pir3"
+name = "pir2"
 type = RFControlProtocolTypes.PIR
-brands = ["Inter-Union"]
-pulse_lengths = [496, 1471, 6924]
-pulse_count = 66
+brands = ["Multi Kon Trade B00RTDMC4S"]
+pulse_lengths = [451, 1402, 14356]
+pulse_count = 50
 
 
 def decode(pulses):
     # Pulses is something like:
-    # 011010011010010110101010010101101010011001100110100101100101101002
+    # 01010110010101100110011001100110010101100110011002
 
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
     # Binary is now something like:
-    # 10010011000011100010101001101100
+    # 101000001000
+    # | 10100 | 00010 |     0 |    0 |
+    # |  Unit |    ID | fixed | State|
 
     if binary is None:
         return None
 
     # Now we extract the data from that string.
     decoded = {
-        "id": int(binary[0:16], 2),
-        "unit": int(binary[16:32], 2),
+        "id": int(binary[0:5], 2),
+        "unit": int(binary[5:10], 2),
         "state": True,
     }
     logger.debug(decoded)
