@@ -32,11 +32,12 @@ def decode(pulses):
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
     logger.debug(binary)
-    # Binary is now something like:
-    # 11000111100 1011110001111001101001101110101010110101100011
 
     if binary is None:
         return None
+
+    # Binary is now something like:
+    # 11000111100 1011110001111001101001101110101010110101100011
 
     # Now we extract the data from that string.
     # | 11000111100 10111100011110011010011011101010   1011    01       01      100011

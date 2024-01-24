@@ -27,7 +27,11 @@ def decode(pulses):
 
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
-    # Binary is now something like:
+ 
+    if binary is None:
+        return None
+
+   # Binary is now something like:
     #
 
     # Now we extract the data from that string.

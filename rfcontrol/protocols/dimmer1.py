@@ -35,6 +35,9 @@ def decode(pulses: str):
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
+    if binary is None:
+        return None
+
     # Binary is now something like:
     # 001000111101001000100110100100000001
 
