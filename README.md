@@ -1,4 +1,14 @@
-# rfcontrolpy
+# Python library rfcontrolpy
+
+![Python][python-shield]
+[![GitHub Release][releases-shield]][releases]
+[![Licence][license-badge]][license]  
+[![Github Sponsors][github-shield]][github]
+[![PayPal][paypal-shield]][paypal]
+[![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
+[![Patreon][patreon-shield]][patreon]
+
+## Introduction
 
 rfcontrolpy is a Python library and port of the node.js [rfcontrolpy](https://github.com/rrooggiieerr/rfcontrolpy)
 module for parsing and constructing 433mhz On-Off Keying (OOK) signals for various devices,
@@ -12,10 +22,9 @@ ported yet due to low demand or lack of hardware.
 
 You can find a list of all supported protocols [here](protocols.md).
 
-The Processing Pipeline
------------------------
+## The Processing Pipeline
 
-### 1. Receiving
+### Receiving
 
 The arduino is connected via serial bus to the processing computer (for example a raspberry pi)
 and waits for rf signal. 
@@ -59,12 +68,12 @@ sorting it after receiving from the Arduino).
 We call the sorted buckets **pulse lengths**, the compressed timings **pulse sequence** and the 
 length of the pulse sequence (inclusive footer) **pulse count**.
 
-### 2. Protocol Matching
+### Protocol Matching
 
 We detect possible protocols by two criteria. The pulse length must match with a small tolerance
 and the pulse count must match. 
 
-### 3. Protocol Parsing
+### Protocol Parsing
 
 If a protocol matches, its `parse` function is called with the pulse sequence. Most protocols are
 parsed almost the same way. First the pulse squence must be converted to a binary representation.
@@ -98,8 +107,7 @@ decoded = {
 ```
 
 
-Details
---------
+## Details
 
 RFControl is more sensitive than needed for most protocols. 
 So we get sometimes, depending of the accuracy of the sender/remote, different bucket counts. 
@@ -110,24 +118,50 @@ calling the `decodePulses` function of each protocol.
 
 The algorithm is the following:
 
-  1. Record the (maybe to many) buckets and compressed pulses with [RFControl](https://github.com/pimatic/RFControl) (Arduino / c++)
-  2. Sort the buckets in `rfcontrolpy` `prepare_compressed_pulses`
-  3. Try to find a matching protocol in rfcontrolpy `decode_pulses`
-  4. If we have more than 3 buckets and two of the buckets are similar (`b1*2 < b2`) we merge them to just one bucket by averaging and adapting the pulses in rfcontrolpy `fix_pulses`
-  5. Go to step 3
+1. Record the (maybe to many) buckets and compressed pulses with [RFControl](https://github.com/pimatic/RFControl) (Arduino / c++)
+2. Sort the buckets in `rfcontrolpy` `prepare_compressed_pulses`
+3. Try to find a matching protocol in rfcontrolpy `decode_pulses`
+4. If we have more than 3 buckets and two of the buckets are similar (`b1*2 < b2`) we merge them to just one bucket by averaging and adapting the pulses in rfcontrolpy `fix_pulses`
+5. Go to step 3
 
-Adding a new Protocol
---------------------
+## Adding a new Protocol
 
-## Preparation
+### Preparation
 
 1. Fork the rfcontrolpy repository and clone your fork into a local directory.
 2. We are using [unittest](https://docs.python.org/3/library/unittest.html) for automating tests.
 3. You should be able to run the tests with `python3 -m unittest discover`.
 5. Running `python3 -m build` let it compile all files and whats for changes.
 
-## Protocol development
+### Protocol development
 
 1. Create a new protocol file (like the others) in `rfcontrol/protocols/`.
 2. Add a test case in `tests/protocols` with the data from the Arduino.
 3. Adapt the protocol file, so that the test get passed.
+
+## Support my work
+
+Do you enjoy using this Python library? Then consider supporting my work using one of the following
+platforms:
+
+[![Github Sponsors][github-shield]][github]
+[![PayPal][paypal-shield]][paypal]
+[![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
+[![Patreon][patreon-shield]][patreon]
+
+---
+
+[python-shield]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
+[releases]: https://github.com/rrooggiieerr/rfcontrolpy/releases
+[releases-shield]: https://img.shields.io/github/v/release/rrooggiieerr/rfcontrolpy?style=for-the-badge
+[license]: ./LICENSE
+[license-badge]: https://img.shields.io/github/license/rrooggiieerr/rfcontrolpy?style=for-the-badge
+[paypal]: https://paypal.me/seekingtheedge
+[paypal-shield]: https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white
+[buymecoffee]: https://www.buymeacoffee.com/rrooggiieerr
+[buymecoffee-shield]: https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black
+[github]: https://github.com/sponsors/rrooggiieerr
+[github-shield]: https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=ea4aaa
+[patreon]: https://www.patreon.com/seekingtheedge/creators
+[patreon-shield]: https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white
+
