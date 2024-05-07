@@ -2,7 +2,8 @@
 
 ![Python][python-shield]
 [![GitHub Release][releases-shield]][releases]
-[![Licence][license-badge]][license]  
+[![Licence][license-shield]][license]
+[![Maintainer][maintainer-shield]][maintainer]  
 [![Github Sponsors][github-shield]][github]
 [![PayPal][paypal-shield]][paypal]
 [![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
@@ -142,12 +143,17 @@ The algorithm is the following:
 ## Support my work
 
 Do you enjoy using this Python library? Then consider supporting my work using one of the following
-platforms:
+platforms, your donation is greatly appreciated and keeps me motivated:
 
 [![Github Sponsors][github-shield]][github]
 [![PayPal][paypal-shield]][paypal]
 [![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
 [![Patreon][patreon-shield]][patreon]
+
+## Hire me
+
+If you're in need for a freelance Python developer for your project please contact me, you can find
+my email address on [my GitHub profile](https://github.com/rrooggiieerr).
 
 ---
 
@@ -155,7 +161,9 @@ platforms:
 [releases]: https://github.com/rrooggiieerr/rfcontrolpy/releases
 [releases-shield]: https://img.shields.io/github/v/release/rrooggiieerr/rfcontrolpy?style=for-the-badge
 [license]: ./LICENSE
-[license-badge]: https://img.shields.io/github/license/rrooggiieerr/rfcontrolpy?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/rrooggiieerr/rfcontrolpy?style=for-the-badge
+[maintainer]: https://github.com/rrooggiieerr
+[maintainer-shield]: https://img.shields.io/badge/MAINTAINER-%40rrooggiieerr-41BDF5?style=for-the-badge
 [paypal]: https://paypal.me/seekingtheedge
 [paypal-shield]: https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white
 [buymecoffee]: https://www.buymeacoffee.com/rrooggiieerr
