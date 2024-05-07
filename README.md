@@ -18,7 +18,7 @@ switches and weather stations.
 It works together with the [RFControl](https://github.com/rrooggiieerr/RFControl) Arduino library
 for receiving the signals.
 
-The Python port now contains a working contoller and a dozen of protocols. Not all protocols are
+The Python port now contains a working controller and a dozen of protocols. Not all protocols are
 ported yet due to low demand or lack of hardware.
 
 You can find a list of all supported protocols [here](protocols.md).
@@ -77,7 +77,7 @@ and the pulse count must match.
 ### Protocol Parsing
 
 If a protocol matches, its `parse` function is called with the pulse sequence. Most protocols are
-parsed almost the same way. First the pulse squence must be converted to a binary representation.
+parsed almost the same way. First the pulse sequence must be converted to a binary representation.
 
 In almost all cases there exist a mapping from pulse sequences to a binary `0` and `1`. In this
 example the pulse sequence `0110` represents a binary `0` and `0101` maps to a binary `1`:
@@ -91,7 +91,7 @@ pulses2binary_mapping = {
 binary = helpers.pulses2binary(pulses, pulses2binary_mapping)
 ```
 
-The binary reprsentation now looks like this:
+The binary representation now looks like this:
 
 ```
 110011000010
