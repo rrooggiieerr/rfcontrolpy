@@ -11,11 +11,11 @@
 
 ## Introduction
 
-rfcontrolpy is a Python library and port of the node.js [rfcontrolpy](https://github.com/rrooggiieerr/rfcontrolpy)
+rfcontrolpy is a Python library and port of the node.js [rfcontroljs](https://github.com/pimatic/rfcontroljs)
 module for parsing and constructing 433mhz On-Off Keying (OOK) signals for various devices,
 switches and weather stations.
 
-It works together with the [RFControl](https://github.com/rrooggiieerr/RFControl) Arduino library
+It works together with the [RFControl](https://github.com/pimatic/RFControl) Arduino library
 for receiving the signals.
 
 The Python port now contains a working controller and a dozen of protocols. Not all protocols are
@@ -107,7 +107,6 @@ decoded = {
 }
 ```
 
-
 ## Details
 
 RFControl is more sensitive than needed for most protocols. 
@@ -172,4 +171,3 @@ my email address on [my GitHub profile](https://github.com/rrooggiieerr).
 [github-shield]: https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=ea4aaa
 [patreon]: https://www.patreon.com/seekingtheedge/creators
 [patreon-shield]: https://img.shields.io/badge/Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white
-
