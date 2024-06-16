@@ -1,34 +1,57 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.24", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "rfcontrol/_version.py"
+
+[tool.hatch.version]
+source = "vcs"
 
 [project]
 name = "rfcontrolpy"
-version = "0.0.6"
-license = {text = "Apache-2.0"}
+dynamic = ["version"]
+license = {text = "GPLv3"}
 authors = [
-    { name="Rogier van Staveren" }
+    { name="Rogier van Staveren", email="rogier@batoid.com" }
 ]
 description = "Library with protocol support for different 433MHz switches and weather stations for the RFControl Arduino library."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.11"
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Home Automation",
+    "Topic :: Software Development :: Libraries :: Python Modules"
 ]
 dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/rrooggiieerr/rfcontrolpy"
-"Bug Tracker" = "https://github.com/rrooggiieerr/rfcontrolpy/issues"
-
-[tool.black]
-target-version = ["py39", "py310"]
-exclude = 'generated'
+Homepage = "https://github.com/rrooggiieerr/rfcontrolpy"
+Issues = "https://github.com/rrooggiieerr/rfcontrolpy/issues"
 
 [tool.isort]
 # https://github.com/PyCQA/isort/wiki/isort-Settings
 profile = "black"
+skip = "*/_version.py"
+
+[tool.black]
+exclude = '*/_version.py'
+
+[tool.pylint]
+ignore = "_version.py"
+recursive = "y"
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "rfcontrol"
+
+[[tool.mypy.overrides]]
+module = ["*._version"]
+ignore_missing_imports = true
