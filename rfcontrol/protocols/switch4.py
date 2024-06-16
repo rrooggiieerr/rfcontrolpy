@@ -1,4 +1,6 @@
 # pylint: disable=duplicate-code
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-function-docstring
 
 import logging
 

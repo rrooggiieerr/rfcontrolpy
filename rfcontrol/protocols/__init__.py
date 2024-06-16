@@ -4,6 +4,7 @@ https://github.com/pimatic/rfcontroljs/tree/master/src/protocols
 """
 
 import glob
+from enum import StrEnum
 from os.path import basename, dirname, isfile, join
 
 __all__ = [
@@ -13,7 +14,11 @@ __all__ = [
 ]
 
 
-class RFControlProtocolTypes:
+class RFControlProtocolTypes(StrEnum):
+    """
+    The type of protocols.
+    """
+
     ALARM = "alarm"
     AWNING = "awning"
     CONTACT = "contact"

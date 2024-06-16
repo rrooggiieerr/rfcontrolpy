@@ -2,6 +2,8 @@
 Use this skeleton protocol to implement new protocols
 """
 
+# pylint: disable=missing-function-docstring
+
 import logging
 
 from rfcontrol.helpers import binary2pulses, pulses2binary

@@ -1,4 +1,6 @@
 # pylint: disable=duplicate-code
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-function-docstring
 
 import logging
 
@@ -25,7 +27,7 @@ pulse_lengths = [189, 547, 5720]
 pulse_count = 50
 
 
-def binaryToChar(data):
+def binary_to_char(data):
     character = 0
     i = len(data) - 1
     while i >= 0:
@@ -55,8 +57,8 @@ def decode(pulses):
     # | SystemCode | ProgramCode | inverse state  | state
 
     # First we save the tri-state as a char.
-    unit = binaryToChar(binary[5:10])
-    state = True if binary[11] == "2" else False
+    unit = binary_to_char(binary[5:10])
+    state = binary[11] == "2"
 
     # For the rest we don't need the third state. Set all 2 to 0
     binary = binary.replace("2", "0")

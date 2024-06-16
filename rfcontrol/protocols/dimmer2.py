@@ -1,8 +1,12 @@
-# Support for LightwaveRF dimmers
-#
-# http://www.benjiegillam.com/2013/02/lightwaverf-rf-protocol/
-# https://old-wiki.somakeit.org.uk/index.php/LightwaveRF_RF_Protocol
+"""
+Support for LightwaveRF dimmers
+
+http://www.benjiegillam.com/2013/02/lightwaverf-rf-protocol/
+https://old-wiki.somakeit.org.uk/index.php/LightwaveRF_RF_Protocol
+"""
+
 # pylint: disable=duplicate-code
+# pylint: disable=missing-function-docstring
 
 import logging
 
@@ -112,7 +116,7 @@ def decode(pulses):
 def encode(
     id: int, unit: int, state: bool = None, dimlevel: int = None, all: bool = False
 ):
-    if dimlevel > 0 and dimlevel <= 31:
+    if 0 < dimlevel <= 31:
         _level = dimlevel + 0x80
         state = binary2pulses(f"{0x76:07b}", binary2pulses_mapping)
     else:
