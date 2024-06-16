@@ -1,10 +1,15 @@
+# pylint: disable=line-too-long
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+
 import logging
 import unittest
 
+from rfcontrol.protocols import switch10
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
-
-import rfcontrol.protocols.switch10 as switch10
 
 
 class TestSwitch10(unittest.TestCase):

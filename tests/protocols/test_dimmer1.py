@@ -1,10 +1,15 @@
+# pylint: disable=line-too-long
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+
 import logging
 import unittest
 
+from rfcontrol.protocols import dimmer1
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
-
-import rfcontrol.protocols.dimmer1 as dimmer1
 
 
 class TestDimmer1(unittest.TestCase):

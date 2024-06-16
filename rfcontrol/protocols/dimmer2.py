@@ -2,6 +2,7 @@
 #
 # http://www.benjiegillam.com/2013/02/lightwaverf-rf-protocol/
 # https://old-wiki.somakeit.org.uk/index.php/LightwaveRF_RF_Protocol
+# pylint: disable=duplicate-code
 
 import logging
 

@@ -1,3 +1,5 @@
+# pylint: disable=duplicate-code
+
 import logging
 
 from rfcontrol.helpers import pulses2binary

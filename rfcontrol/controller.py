@@ -2,6 +2,9 @@
 Python port of the original CoffeeScript/nodejs code
 """
 
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+
 import glob
 import logging
 from os.path import basename, dirname, isfile, join
@@ -16,6 +19,18 @@ protocols = [
     for f in glob.glob(join(dirname(__file__), "protocols/*.py"))
     if isfile(f) and not basename(f).startswith("_")
 ]
+
+
+class RFControlProtocolNotFoundError(Exception):
+    """
+    This error is raised when a protocol can not be found.
+    """
+
+
+class RFControlSendNotSupportedError(Exception):
+    """
+    This error is raised when a protocol only supports receiving and not sending.
+    """
 
 
 def does_protocol_match(pulse_lengths, pulse_sequence, protocol) -> bool:
@@ -47,7 +62,9 @@ def sort_indices(array: []):
 
 
 def compress_timings(timings: []):
-    """ """
+    """
+    Compress timings.
+    """
     pulses = ""
     buckets = []
     sums = []
@@ -76,7 +93,9 @@ def compress_timings(timings: []):
 
 
 def prepare_compressed_pulses(input: str):
-    """ """
+    """
+    Prepares compressed pulses.
+    """
     # Input is something like:
     # 268 2632 1282 10168 0 0 0 0 010002000202000002000200020200020002...
     # The first 8 numbers are the pulse length and the last string is the pulse sequence
@@ -93,19 +112,19 @@ def prepare_compressed_pulses(input: str):
 
 def sort_compressed_pulses(pulse_lengths: [], pulse_sequence: str):
     """
-    Sort the pulses from short to long and updates indices in pulses.
+    Sort the pulse lengths from short to long and updates indices in pulse sequence accordingly.
     """
+    # Sort the pulse lengths from short to long.
     sorted_indices = sort_indices(pulse_lengths)
     pulse_lengths.sort()
 
+    # Updates indices in pulse sequence accordingly.
     reindexed_pulse_sequence = ""
     for c in pulse_sequence:
         reindexed_pulse_sequence += str(sorted_indices.index(int(c)))
     # logger.debug("reindexed pulse sequence: %s", reindexed_pulse_sequence)
 
-    pulse_sequence = reindexed_pulse_sequence
-
-    return (pulse_lengths, pulse_sequence)
+    return (pulse_lengths, reindexed_pulse_sequence)
 
 
 def fix_pulses(pulse_lengths: [], pulse_sequence: str):
@@ -185,10 +204,12 @@ def encode_pulses(protocol_name: str, message: str):
     protocol = get_protocol(protocol_name)
 
     if protocol is None:
-        raise Exception(f"Could not find a protocol named {protocol_name}")
+        raise RFControlProtocolNotFoundError(
+            f"Could not find a protocol named {protocol_name}"
+        )
 
     if protocol.encode is None:
-        raise Exception("The protocol has no send report")
+        raise RFControlSendNotSupportedError("The protocol has no send support")
 
     return {
         "pulses": protocol.encode(**message),
