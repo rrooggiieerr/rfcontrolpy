@@ -1,6 +1,7 @@
 """
 Python port of the original CoffeeScript/nodejs code
 """
+
 import logging
 
 logger = logging.getLogger(__name__)

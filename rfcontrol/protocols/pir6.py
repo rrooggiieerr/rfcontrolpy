@@ -24,7 +24,7 @@ pulse_count = 50
 
 def decode(pulses):
     # Pulses is something like:
-    # 
+    #
 
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)

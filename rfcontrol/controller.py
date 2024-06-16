@@ -1,6 +1,7 @@
 """
 Python port of the original CoffeeScript/nodejs code
 """
+
 import glob
 import logging
 from os.path import basename, dirname, isfile, join

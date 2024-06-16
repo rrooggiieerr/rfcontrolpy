@@ -1,6 +1,7 @@
 """
 Use this skeleton protocol to implement new protocols
 """
+
 import logging
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
@@ -27,11 +28,11 @@ def decode(pulses):
 
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
- 
+
     if binary is None:
         return None
 
-   # Binary is now something like:
+    # Binary is now something like:
     #
 
     # Now we extract the data from that string.
