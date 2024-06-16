@@ -42,7 +42,7 @@ profile = "black"
 skip = "*/_version.py"
 
 [tool.black]
-exclude = '*/_version.py'
+exclude = "rfcontrol/_version.py"
 
 [tool.pylint]
 ignore = "_version.py"
