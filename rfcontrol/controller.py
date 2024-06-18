@@ -21,13 +21,19 @@ protocols = [
 ]
 
 
-class RFControlProtocolNotFoundError(Exception):
+class RFControlError(Exception):
+    """
+    Generic RF Control error.
+    """
+
+
+class RFControlProtocolNotFoundError(RFControlError):
     """
     This error is raised when a protocol can not be found.
     """
 
 
-class RFControlSendNotSupportedError(Exception):
+class RFControlSendNotSupportedError(RFControlError):
     """
     This error is raised when a protocol only supports receiving and not sending.
     """
