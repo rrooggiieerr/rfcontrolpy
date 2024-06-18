@@ -42,7 +42,7 @@ def decode(pulses):
     # |    ID    | BT | Temp.        | Humid.   |
     decoded = {
         "id": int(binary[:8], 2),
-        "channel": int(binary[10:12], 2),
+        "unit": int(binary[10:12], 2),
         "temperature": int(binary[12:24], 2) / 10,
         "humidity": int(binary[24:30], 2),
         "lowBattery": binary[8] != "1",

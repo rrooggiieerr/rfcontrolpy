@@ -38,16 +38,16 @@ def decode(pulses):
 
     # Now we extract the data from that string.
     # 1110 0000 0000 0001 0000 1010 1000 1011
-    # IIII IICC TTTT TTTT TTTT TTTT xxxx xxxx
+    # IIII IIUU TTTT TTTT TTTT TTTT xxxx xxxx
     # 0    4    8    12   16   20   24   28
     # I: Device ID, 6-bit unsigned Int
-    # C: Channel (2 bits + 1, 00=1, 01=2, 10=3)
+    # U: Unit (2 bits + 1, 00=1, 01=2, 10=3)
     # T: Temperature Value, 16-bit signed Int (divide decimal by 10)
     # x: Unused
     sign = -1 if binary[8] == "1" else 1
     decoded = {
         "id": int(binary[:6], 2),
-        "channel": int(binary[6:8], 2) + 1,
+        "unit": int(binary[6:8], 2) + 1,
         "temperature": sign * int(binary[9:24], 2) / 10,
     }
     logger.debug(decoded)
