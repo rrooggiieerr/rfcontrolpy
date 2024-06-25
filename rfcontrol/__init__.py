@@ -1,8 +1,5 @@
 # pylint: disable=missing-module-docstring
 
-try:
-    from ._version import __version__
-except ModuleNotFoundError:
-    pass
+__version__ = "0.0.8"
 
-from rfcontrol import controller, helpers
+from . import controller, helpers

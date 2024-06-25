@@ -1,16 +1,10 @@
 [build-system]
-requires = ["hatchling>=1.24", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.hooks.vcs]
-version-file = "rfcontrol/_version.py"
-
-[tool.hatch.version]
-source = "vcs"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "rfcontrolpy"
-dynamic = ["version"]
+version = "0.0.8"
 license = {text = "GPLv3"}
 authors = [
     { name="Rogier van Staveren", email="rogier@batoid.com" }
