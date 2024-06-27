@@ -22,7 +22,7 @@ def pulses2binary(pulses: str, pulses2binary_mapping) -> str:
         else:
             logger.debug("No matching pulse sequence found")
             return None
-    logger.debug(binary)
+    # logger.debug(binary)
     return binary
 
 
@@ -33,7 +33,7 @@ def binary2pulses(binary: str, binary2pulses_mapping) -> str:
     pulses = ""
     for bit in binary:
         pulses += binary2pulses_mapping[bit]
-    logger.debug(pulses)
+    # logger.debug(pulses)
     return pulses
 
 
