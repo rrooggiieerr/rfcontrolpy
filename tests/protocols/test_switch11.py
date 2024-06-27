@@ -40,27 +40,27 @@ class TestSwitch11(unittest.TestCase):
     def test_encode_1(self) -> None:
         encoded = switch11.encode(id=34037, unit=1, state=True)
         self.assertEqual(
-            "011010010110011010101001101001010101100110010110011010100110011002",
+            "100101010110011010101001101001010101100110010110011010100110011002",
             encoded,
         )
 
     def test_encode_2(self) -> None:
         encoded = switch11.encode(id=34037, unit=1, state=False)
         self.assertEqual(
-            "011010011010011010101001101001010101100110010110011010100110011002",
+            "100101011010011010101001101001010101100110010110011010100110011002",
             encoded,
         )
 
     def test_encode_3(self) -> None:
         encoded = switch11.encode(id=34037, unit=0, state=True)
         self.assertEqual(
-            "011010101001011010101001101001010101100110010110011010100110011002",
+            "100101101001011010101001101001010101100110010110011010100110011002",
             encoded,
         )
 
     def test_encode_4(self) -> None:
         encoded = switch11.encode(id=34037, unit=0, state=False)
         self.assertEqual(
-            "011010100110011010101001101001010101100110010110011010100110011002",
+            "100101100110011010101001101001010101100110010110011010100110011002",
             encoded,
         )
