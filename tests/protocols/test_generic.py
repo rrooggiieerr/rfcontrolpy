@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 
-class TestSwitch1(unittest.TestCase):
+class TestGeneric(unittest.TestCase):
     def test_decode_1(self) -> None:
         decoded = generic.decode(
             "020102010201020101020102010201020102020101020201020102010102020101020201010202010201020102010201020102010201020102010201020102010201020102010201020102010201020102010201020102010201020102010201010203"

@@ -17,7 +17,9 @@ class TestSwitch1(unittest.TestCase):
         decoded = switch1.decode(
             "020100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010001000100010000010100000100010001000103"
         )
-        assert decoded == {"id": 67108863, "all": False, "state": True, "unit": 0}
+        self.assertDictEqual(
+            {"id": 67108863, "all": False, "state": True, "unit": 0}, decoded
+        )
 
     def test_decode_2(self) -> None:
         decoded = switch1.decode(
