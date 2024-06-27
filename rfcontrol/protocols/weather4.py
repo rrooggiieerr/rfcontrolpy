@@ -64,7 +64,7 @@ def decode(pulses):
 
     decoded = {
         "id": int(binary[:8], 2),
-        "unit": int(binary[10:12], 2),
+        "unit": int(binary[36:40], 2),
         "temperature": temperature,
         "humidity": humidity,
         "lowBattery": lowBattery,
