@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
-    ["1111111104", ""], # Header
+    ["1111111104", ""],  # Header
     ["02", "0"],  # Binary 0
     ["03", "1"],  # Binary 1
     ["05", ""],  # Footer
@@ -52,12 +52,12 @@ def decode(pulses):
     # positive/negative)
 
     t0 = int(binary[16:28], 2)
-    temperature = round((t0 * 10 - 12200) / 18 ) / 10
-    
+    temperature = round((t0 * 10 - 12200) / 18) / 10
+
     h0 = int(binary[28:32], 2)
     h1 = int(binary[32:36], 2)
     humidity = h0 * 10 + h1
-    if (3 - (int(binary[12:16], 2)/10)) < 2.5:
+    if (3 - (int(binary[12:16], 2) / 10)) < 2.5:
         lowBattery = True
     else:
         lowBattery = False
