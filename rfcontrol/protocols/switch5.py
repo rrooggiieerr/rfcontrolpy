@@ -64,6 +64,7 @@ def encode(id: int, unit: int, state: bool, all: bool = False):
     encoded = binary2pulses(f"{id:020b}", binary2pulses_mapping)
     if all:
         unit_code = 6 if state else 7
+        state = not state
     else:
         unit_code = (None, 0, 1, 2, 4)[unit]
     encoded += binary2pulses(f"{unit_code:03b}", binary2pulses_mapping)
