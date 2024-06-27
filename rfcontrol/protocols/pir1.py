@@ -43,8 +43,8 @@ def decode(pulses):
 
     # Now we extract the data from that string.
     decoded = {
-        "id": int(binary[0:5], 2),
-        "unit": int(binary[5:10], 2),
+        "unit": int(binary[0:5], 2),
+        "id": int(binary[5:10], 2),
         "state": True,
     }
     logger.debug(decoded)
