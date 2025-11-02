@@ -4,7 +4,7 @@
 [![GitHub Release][releases-shield]][releases]
 [![Licence][license-shield]][license]
 [![Maintainer][maintainer-shield]][maintainer]  
-[![Github Sponsors][github-shield]][github]
+[![GitHub Sponsors][github-shield]][github]
 [![PayPal][paypal-shield]][paypal]
 [![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
 [![Patreon][patreon-shield]][patreon]
@@ -124,34 +124,47 @@ The algorithm is the following:
 4. If we have more than 3 buckets and two of the buckets are similar (`b1*2 < b2`) we merge them to just one bucket by averaging and adapting the pulses in rfcontrolpy `fix_pulses`
 5. Go to step 3
 
-## Adding a new Protocol
+## Contribution and appreciation
 
-### Preparation
+You can contribute to this library, or show your appreciation, in the following ways.
+
+### Add a protocol for you device
+
+If the protocol for your device is not yet supported you are encouraged to add support for your
+protocol to this library.
+
+**Preparation**
 
 1. Fork the rfcontrolpy repository and clone your fork into a local directory.
-2. We are using [unittest](https://docs.python.org/3/library/unittest.html) for automating tests.
+2. [unittest](https://docs.python.org/3/library/unittest.html) is used for automating tests.
 3. You should be able to run the tests with `python3 -m unittest discover`.
-5. Running `python3 -m build` let it compile all files and whats for changes.
+5. Running `python3 -m build` let it compile all files.
 
-### Protocol development
+**Protocol development**
 
-1. Create a new protocol file (like the others) in `rfcontrol/protocols/`.
+1. Create a new protocol file in `rfcontrol/protocols/`, you can use one of the other protocol
+ files as a guideline.
 2. Add a test case in `tests/protocols` with the data from the Arduino.
 3. Adapt the protocol file, so that the test get passed.
 
-## Support my work
+### Star this library
 
-Do you enjoy using this Python library? Then consider supporting my work using one of the following
-platforms, your donation is greatly appreciated and keeps me motivated:
+Help other users find this library by starring this GitHub page. Click **⭐ Star** on the top right
+of the GitHub page.
 
-[![Github Sponsors][github-shield]][github]
+### Support my work
+
+Do you enjoy using this Python library? Please consider supporting my work through one of the following
+platforms. Your contribution is greatly appreciated and keeps me motivated:
+
+[![GitHub Sponsors][github-shield]][github]
 [![PayPal][paypal-shield]][paypal]
 [![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
 [![Patreon][patreon-shield]][patreon]
 
-## Hire me
+### Hire me
 
-If you're in need for a freelance Python developer for your project please contact me, you can find
+If you're in need of a freelance Python developer for your project please contact me, you can find
 my email address on [my GitHub profile](https://github.com/rrooggiieerr).
 
 [python-shield]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
