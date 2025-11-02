@@ -487,7 +487,7 @@ class TestControler(unittest.TestCase):
                 "id": 105,
                 "temperature": 2.9,
                 "humidity": 59,
-                "channel": 0,
+                "unit": 0,
                 "lowBattery": False,
             },
             results[0]["values"],
@@ -663,7 +663,7 @@ class TestControler(unittest.TestCase):
         self.assertEqual(1, len(results))
         self.assertEqual("weather19", results[0]["protocol"])
         self.assertEqual(
-            {"id": 56, "channel": 1, "temperature": 26.6}, results[0]["values"]
+            {"id": 56, "unit": 1, "temperature": 26.6}, results[0]["values"]
         )
 
     def test_decode_pulses_weather19_2(self) -> None:
@@ -675,7 +675,7 @@ class TestControler(unittest.TestCase):
         self.assertEqual(1, len(results))
         self.assertEqual("weather19", results[0]["protocol"])
         self.assertEqual(
-            {"id": 45, "channel": 1, "temperature": 29.4}, results[0]["values"]
+            {"id": 45, "unit": 1, "temperature": 29.4}, results[0]["values"]
         )
 
     def test_decode_pulses_weather19_3(self) -> None:
@@ -687,7 +687,7 @@ class TestControler(unittest.TestCase):
         self.assertEqual(1, len(results))
         self.assertEqual("weather19", results[0]["protocol"])
         self.assertEqual(
-            {"id": 45, "channel": 1, "temperature": 30.4}, results[0]["values"]
+            {"id": 45, "unit": 1, "temperature": 30.4}, results[0]["values"]
         )
 
     def test_decode_pulses_weather19_4(self) -> None:
@@ -699,7 +699,7 @@ class TestControler(unittest.TestCase):
         self.assertEqual(1, len(results))
         self.assertEqual("weather19", results[0]["protocol"])
         self.assertEqual(
-            {"id": 45, "channel": 1, "temperature": 46.0}, results[0]["values"]
+            {"id": 45, "unit": 1, "temperature": 46.0}, results[0]["values"]
         )
 
     # def test_decode_pulses_weather20_1(self) -> None:
