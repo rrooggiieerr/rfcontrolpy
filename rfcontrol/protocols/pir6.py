@@ -36,8 +36,15 @@ def decode(pulses):
     if binary is None:
         return None
 
+    binary += "0"
+
     # Binary is now something like:
     # 001100001110100011000011
+    # Translate to the following sequence
+    # 0011 0000 1110 1000 1100 0011
+    # xxII IIII IIII IIII IIII IIII
+    # I: 24 bit ID (unsigned, MSB)
+    # x: ignored
 
     # Now we extract the data from that string.
     decoded = {
