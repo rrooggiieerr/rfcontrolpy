@@ -54,18 +54,19 @@ def decode(pulses):
 
 # Looks like encode had never worked in the original implementation
 def encode(id: int, unit: int, state: bool, all: bool = False):
-    encoded = "011010"
-    unit = binary2pulses(f"{unit}", binary2pulses_mapping)
-    encoded += binary2pulses_mapping[str(unit)]
+    encoded = "100101"
+    encoded += binary2pulses(f"{unit:01b}", binary2pulses_mapping)
+    
+    # encoded += binary2pulses_mapping[str(unit)]
 
-    state = binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     inv_state = binary2pulses_mapping["0"] if state else binary2pulses_mapping["1"]
+    state = binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     if unit == 1:
         encoded += f"{state}{inv_state}"
     else:
         encoded += f"{inv_state}{state}"
 
-    encoded += binary2pulses(f"{id:026b}", binary2pulses_mapping)
-    encoded += "02"
+    encoded += binary2pulses(f"{id:016b}", binary2pulses_mapping)
+    encoded += "0110011010100110011002"
     logger.debug(encoded)
     return encoded
