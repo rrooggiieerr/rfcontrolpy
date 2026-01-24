@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rfcontrolpy"
-version = "0.0.9"
+version = "0.0.10"
 license = {text = "GPLv3"}
 authors = [
     { name="Rogier van Staveren", email="rogier@batoid.com" }
