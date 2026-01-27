@@ -1,10 +1,10 @@
-name: Format Python
+name: Check Python code format
 
 on: [push]
 
 jobs:
   linter_name:
-    name: runner / black formatter
+    name: runner / isort & black formatter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
