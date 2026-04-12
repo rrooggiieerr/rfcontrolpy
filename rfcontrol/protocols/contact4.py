@@ -38,18 +38,18 @@ def decode(pulses):
 
     decoded = {
         "id": int(binary[0:20], 2),
-        "contact": binary[21] != "1",
+        "state": binary[21] != "1",
         "lowBattery": binary[20] != "1",
     }
     logger.debug(decoded)
     return decoded
 
 
-def encode(id: int, contact: bool, lowBattery: bool):
+def encode(id: int, state: bool, lowBattery: bool):
     encoded = ""
     encoded += binary2pulses(f"{id:020b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["0"] if lowBattery else binary2pulses_mapping["1"]
-    encoded += binary2pulses_mapping["1"] if contact else binary2pulses_mapping["0"]
+    encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     encoded += "02"
     logger.debug(encoded)
     return encoded
