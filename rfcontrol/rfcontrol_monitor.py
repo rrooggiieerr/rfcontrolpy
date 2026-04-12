@@ -12,8 +12,11 @@ from collections import defaultdict
 # and be sure to have access to /dev/ttyUSB0 or the port where homeduino is attached.
 # If this is not the case (because homeassistant is running)
 # you can add a PTY-bridge:
-####  sudo socat -d -d /dev/ttyUSB0,raw,echo=0,nonblock PTY,raw,echo=0,link=/tmp/ttyRF
+####  sudo socat -d -d /dev/ttyUSB0,raw,echo=0,nonblock PTY,raw,echo=0,link=/tmp/ttyRF &
 # and change SERIAL_PORT to /tmp/ttyRF
+
+# start this script on terminal by 
+# python -m rfcontrol_monitor
 
 
 from rfcontrol import controller  
