@@ -2,6 +2,34 @@
 # pylint: disable=missing-module-docstring
 # pylint: disable=missing-function-docstring
 
+# Supported stations
+#- Auriol H13726
+#- Ventus WS155
+#- Hama EWS 1500
+#- Meteoscan W155/W160
+#- Alecto WS4500
+#- Alecto WS3500
+#- Ventus W044
+#- Balance RF-WS105
+#
+# pulses could be:
+# '01020101010201020102010101020202020202010101010102020201010202010202020203'
+# we first map the pulse sequences to binary
+# binary is now something like: '01000101 0100 011111100000 11100110 1111'
+# based on this example : T12,6 H65
+# 01000101 0100 011111100000 11100110 1111
+# 01000101 : Station ID (random after restart)
+# 0100 : states
+# 01111110000011100110 : data
+# 1111 : check sum (n8 = ( 0xf - n0 - n1 - n2 - n3 - n4 - n5 - n6 - n7) & 0xf)
+# the states showing which data is transmitted
+# 0  1  0  0
+# |  |  |  |-> 0: Scheduled transmission.
+# |  |  |  |-> 1: The transmission was initiated by pressing the button inside the sensor unit
+# |  |--|----> 00,01,10: Temperature and Humidity is transmitted. 11: Non temp/hum data
+# |----------> 0: Sensor's battery voltage is normal. 1: Battery voltage is below ~2.6 V.
+
+
 import logging
 
 from rfcontrol.helpers import pulses2binary
@@ -18,7 +46,7 @@ pulses2binary_mapping = [
 
 name = "weather5"
 type = RFControlProtocolTypes.WEATHER
-brands = ["Auriol IAN 9183"]
+brands = ["Auriol", "Ventus", "Hama", "Meteoscan", "Alecto", "Balance"]
 pulse_lengths = [534, 2000, 4000, 9000]
 pulse_count = 74
 
@@ -43,8 +71,9 @@ def decode(pulses):
             temp_raw -= (1 << n)
         temperature = temp_raw / 10.0
 
-        # humidity: bits 24..29 MSB-first (6 bits)
-        humidity = int(binary[24:30], 2)
+        h0 = int(binary[28:32][::-1], 2)
+        h1 = int(binary[24:28][::-1], 2)
+        humidity = h0 * 10 + h1
 
         decoded = {
             "id": id_,
