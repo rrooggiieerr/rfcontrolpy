@@ -43,9 +43,8 @@ def decode(pulses):
             temp_raw -= (1 << n)
         temperature = temp_raw / 10.0
 
-        h0 = int(binary[28:32][::-1], 2)
-        h1 = int(binary[24:28][::-1], 2)
-        humidity = h0 * 10 + h1
+        # humidity: bits 24..29 MSB-first (6 bits)
+        humidity = int(binary[24:30], 2)
 
         decoded = {
             "id": id_,
