@@ -18,51 +18,33 @@ pulses2binary_mapping = [
 
 name = "weather5"
 type = RFControlProtocolTypes.WEATHER
-brands = ["Auriol", "Ventus", "Hama", "Meteoscan", "Alecto", "Balance"]
+brands = ["Auriol IAN 9183"]
 pulse_lengths = [534, 2000, 4000, 9000]
 pulse_count = 74
 
 
-def _binary_to_number_lsbmsb(binary, start, end):
-    """Extract bits [start..end] from binary string, reverse (LSB first), convert to int."""
-    bits = binary[start:end + 1]
-    return int(bits[::-1], 2)
-
-
-def _binary_to_signed_number_lsbmsb(binary, start, end):
-    """Extract bits [start..end] LSB-first, convert to signed int (two's complement)."""
-    n = end - start + 1
-    value = _binary_to_number_lsbmsb(binary, start, end)
-    if value >= (1 << (n - 1)):
-        value -= (1 << n)
-    return value
-
-
 def decode(pulses):
-    # Pulses mapping to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
-
     if binary is None:
         return None
 
-    # binary is now something like: '01000101 0100 011111100000 11100110 1111'
-    # 01000101 : Station ID (random after restart) - bits 0..7
-    # 0100 : states - bits 8..11
-    # 01111110000011100110 : data - bits 12..31
-    # 1111 : check sum - bits 32..35
-
-    # states showing which data is transmitted (bits 9..10)
-    # 00,01,10: Temperature and Humidity. 11: Non temp/hum data
-    # bit 8: battery (0=normal, 1=low)
-
-    states = _binary_to_number_lsbmsb(binary, 9, 10)
-    id_ = _binary_to_number_lsbmsb(binary, 0, 7)
-    low_battery = _binary_to_number_lsbmsb(binary, 8, 8) != 0
+    # id (bits 0..7) LSB-first
+    id_ = int(binary[0:8][::-1], 2)
+    # battery (bit 8)
+    low_battery = int(binary[8], 2) != 0
+    # states (bits 9..10) LSB-first
+    states = int(binary[9:11][::-1], 2)
 
     if states in (0, 1, 2):
-        temperature = _binary_to_signed_number_lsbmsb(binary, 12, 23) / 10.0
-        h0 = _binary_to_number_lsbmsb(binary, 28, 31)
-        h1 = _binary_to_number_lsbmsb(binary, 24, 27)
+        # temperature (bits 12..23) LSB-first, signed two's complement
+        temp_raw = int(binary[12:24][::-1], 2)
+        n = 12  # number of bits
+        if temp_raw >= (1 << (n - 1)):
+            temp_raw -= (1 << n)
+        temperature = temp_raw / 10.0
+
+        h0 = int(binary[28:32][::-1], 2)
+        h1 = int(binary[24:28][::-1], 2)
         humidity = h0 * 10 + h1
 
         decoded = {
@@ -75,10 +57,11 @@ def decode(pulses):
         return decoded
 
     if states == 3:
-        substate = _binary_to_number_lsbmsb(binary, 12, 14)
+        # substate (bits 12..14) LSB-first
+        substate = int(binary[12:15][::-1], 2)
 
         if substate == 1:
-            avg_airspeed = _binary_to_number_lsbmsb(binary, 24, 31) / 5.0
+            avg_airspeed = int(binary[24:32][::-1], 2) / 5.0
             decoded = {
                 "id": id_,
                 "lowBattery": low_battery,
@@ -88,8 +71,8 @@ def decode(pulses):
             return decoded
 
         if substate == 7:
-            wind_direction = _binary_to_number_lsbmsb(binary, 15, 23)
-            wind_gust = _binary_to_number_lsbmsb(binary, 24, 31) / 5.0
+            wind_direction = int(binary[15:24][::-1], 2)
+            wind_gust = int(binary[24:32][::-1], 2) / 5.0
             decoded = {
                 "id": id_,
                 "lowBattery": low_battery,
@@ -100,7 +83,7 @@ def decode(pulses):
             return decoded
 
         if substate == 3:
-            rain = _binary_to_number_lsbmsb(binary, 16, 31) / 4.0
+            rain = int(binary[16:32][::-1], 2) / 4.0
             decoded = {
                 "id": id_,
                 "lowBattery": low_battery,
