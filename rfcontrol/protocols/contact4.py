@@ -33,7 +33,8 @@ pulse_count = 50
 def decode(pulses):
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
-    if binary is None:
+    # Ignore if conversion failed or binary string is too short to contain id + lowBattery + contact
+    if binary is None or len(binary) < 22:
         return None
 
     decoded = {
