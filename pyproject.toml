@@ -3,7 +3,7 @@ requires = ["hatchling>=1.24", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "rfcontrolpy/_version.py"
+version-file = "rfcontrol/_version.py"
 
 [tool.hatch.version]
 source = "vcs"
