@@ -3,14 +3,14 @@
 # pylint: disable=missing-function-docstring
 
 # Supported stations
-#- Auriol H13726
-#- Ventus WS155
-#- Hama EWS 1500
-#- Meteoscan W155/W160
-#- Alecto WS4500
-#- Alecto WS3500
-#- Ventus W044
-#- Balance RF-WS105
+# - Auriol H13726
+# - Ventus WS155
+# - Hama EWS 1500
+# - Meteoscan W155/W160
+# - Alecto WS4500
+# - Alecto WS3500
+# - Ventus W044
+# - Balance RF-WS105
 #
 # pulses could be:
 # '01020101010201020102010101020202020202010101010102020201010202010202020203'
@@ -68,7 +68,7 @@ def decode(pulses):
         temp_raw = int(binary[12:24][::-1], 2)
         n = 12  # number of bits
         if temp_raw >= (1 << (n - 1)):
-            temp_raw -= (1 << n)
+            temp_raw -= 1 << n
         temperature = temp_raw / 10.0
 
         h0 = int(binary[28:32][::-1], 2)

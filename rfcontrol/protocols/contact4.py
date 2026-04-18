@@ -24,12 +24,6 @@ binary2pulses_mapping = {
 }
 
 name = "contact4"
-type = "contact"  # RFControlProtocolTypes does not have a CONTACT type yet
-    "1": "10",
-    "0": "01",
-}
-
-name = "contact4"
 type = RFControlProtocolTypes.CONTACT
 brands = ["GS-IWDS07"]
 pulse_lengths = [468, 1364, 14096]
@@ -37,39 +31,27 @@ pulse_count = 50
 
 
 def decode(pulses):
-    binary = pulses2binary(pulses, pulses2binary_mapping)
-
-    # Ignore if conversion failed or binary string is too short to contain id + lowBattery + contact
-    if binary is None or len(binary) < 22:
-        return None
-
-    decoded = {
-        "id": int(binary[0:20], 2),
-        "state": binary[21] != "1",
-        "lowBattery": binary[20] != "1",
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
-    if binary is None:
+    # Ignore if conversion failed or binary string is too short to contain id + lowBattery + contact
+    if binary is None or len(binary) < 24:
         return None
 
     decoded = {
         "id": int(binary[:20], 2),
         "state": binary[21] == "1",
-        "low_battery": int(binary[20], 2) != 1
+        "lowBattery": binary[20] != "1",
     }
     logger.debug(decoded)
     return decoded
 
 
-def encode(id: int, state: bool, lowBattery: bool):
-    encoded = ""
-    encoded += binary2pulses(f"{id:020b}", binary2pulses_mapping)
-    encoded += binary2pulses_mapping["0"] if lowBattery else binary2pulses_mapping["1"]
-    encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
 def encode(id: int, state: bool, low_battery: bool = False):
     encoded = binary2pulses(f"{id:020b}", binary2pulses_mapping)
+    encoded += binary2pulses(f"{not low_battery:1b}", binary2pulses_mapping)
     encoded += binary2pulses(f"{state:01b}", binary2pulses_mapping)
+    encoded += "1001"
     encoded += "02"
     logger.debug(encoded)
     return encoded
