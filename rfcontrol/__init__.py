@@ -1,5 +1,8 @@
 # pylint: disable=missing-module-docstring
 
-__version__ = "0.0.8"
+try:
+    from ._version import __version__
+except ModuleNotFoundError:
+    pass
 
 from . import controller, helpers
