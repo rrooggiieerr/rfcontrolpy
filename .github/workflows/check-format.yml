@@ -1,0 +1,20 @@
+name: Check Python code format
+
+on: [push]
+
+jobs:
+  linter_name:
+    name: runner / isort & black formatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check files using the isort import sorter
+        uses: isort/isort-action@v1
+        with:
+          configuration: "--profile black --check-only"
+          requirements-files: "requirements.txt"
+      - name: Check files using the black formatter
+        uses: psf/black@stable
+        with:
+          options: "--check"
+          src: "."
