@@ -40,7 +40,7 @@ def decode(pulses):
 
     decoded = {
         "id": int(binary[:20], 2),
-        "state": binary[21] == "1",
+        "state": binary[21] != "1",
         "lowBattery": binary[20] != "1",
     }
     logger.debug(decoded)
@@ -55,3 +55,4 @@ def encode(id: int, state: bool, low_battery: bool = False):
     encoded += "02"
     logger.debug(encoded)
     return encoded
+
