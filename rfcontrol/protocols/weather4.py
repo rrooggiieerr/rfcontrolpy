@@ -58,16 +58,16 @@ def decode(pulses):
     h1 = int(binary[32:36], 2)
     humidity = h0 * 10 + h1
     if (3 - (int(binary[12:16], 2) / 10)) < 2.5:
-        lowBattery = True
+        low_battery = True
     else:
-        lowBattery = False
+        low_battery = False
 
     decoded = {
         "id": int(binary[:8], 2),
         "unit": int(binary[36:40], 2),
         "temperature": temperature,
         "humidity": humidity,
-        "lowBattery": lowBattery,
+        "lowBattery": low_battery,
     }
     logger.debug(decoded)
     return decoded
