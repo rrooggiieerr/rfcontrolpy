@@ -87,21 +87,29 @@ def encode(
         id: Device ID.
         unit: Unit code.
         state: True for on, False for off, None to leave unchanged.
-        dimlevel: Dim level, 0-15.
+        dimlevel: Dim level, 0-15. Without a dim level a plain on/off message
+            is sent, which is the same as switch1.
         all: Address all units in the group.
 
     Returns:
         Pulse sequence string.
+
+    Raises:
+        ValueError: If both state and dimlevel are None.
     """
     encoded = "02"
     encoded += binary2pulses(f"{id:026b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["1"] if all else binary2pulses_mapping["0"]
     if state is None:
+        if dimlevel is None:
+            raise ValueError("Either state or dimlevel is required")
         encoded += binary2pulses_mapping["N"]
     else:
         encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     encoded += binary2pulses(f"{unit:04b}", binary2pulses_mapping)
-    encoded += binary2pulses(f"{dimlevel:04b}", binary2pulses_mapping)
+    if dimlevel is not None:
+        # Without a dim level this is a plain on/off message, the same as switch1.
+        encoded += binary2pulses(f"{dimlevel:04b}", binary2pulses_mapping)
     encoded += "03"
     logger.debug(encoded)
     return encoded
