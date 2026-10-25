@@ -1,6 +1,7 @@
 """Generic2 protocol: homemade sensors with battery level and checksum."""
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import hex_checksum, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -21,7 +22,7 @@ pulse_lengths = [480, 1320, 13320]
 pulse_count = 66
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:

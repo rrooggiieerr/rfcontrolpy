@@ -1,6 +1,7 @@
 """Weather19 protocol: Landmann BBQ thermometer."""
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -21,7 +22,7 @@ pulse_lengths = [548, 1008, 1996, 3936]
 pulse_count = 66
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode raw pulse data into weather sensor readings.
 
     Args:

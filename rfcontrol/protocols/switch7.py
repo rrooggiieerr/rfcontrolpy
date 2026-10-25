@@ -4,6 +4,7 @@ Brands: eHome.
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -31,7 +32,7 @@ pulse_lengths = [307, 944, 9712]
 pulse_count = 50
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:
@@ -64,7 +65,7 @@ def decode(pulses):
     return decoded
 
 
-def encode(id: int, unit: int, state: bool, all: bool = False):
+def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     """Encode a message into a pulse sequence.
 
     Args:

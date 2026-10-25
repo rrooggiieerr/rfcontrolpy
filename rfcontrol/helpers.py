@@ -3,12 +3,15 @@
 Python port of the original CoffeeScript/Node.js rfcontroljs helpers.
 """
 
+from collections.abc import Mapping, Sequence
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-def pulses2binary(pulses: str, pulses2binary_mapping) -> str | None:
+def pulses2binary(
+    pulses: str, pulses2binary_mapping: Sequence[Sequence[str]]
+) -> str | None:
     """Converts a sequence of pulses to a binary value."""
     binary = ""
     pointer = 0
@@ -24,7 +27,7 @@ def pulses2binary(pulses: str, pulses2binary_mapping) -> str | None:
     return binary
 
 
-def binary2pulses(binary: str, binary2pulses_mapping) -> str:
+def binary2pulses(binary: str, binary2pulses_mapping: Mapping[str, str]) -> str:
     """Converts a binary value to a sequence of pulses."""
     pulses = ""
     for bit in binary:
@@ -32,7 +35,7 @@ def binary2pulses(binary: str, binary2pulses_mapping) -> str:
     return pulses
 
 
-def hex_checksum(data):
+def hex_checksum(data: str) -> bool:
     """Calculates the checksum."""
     checksum = 0
     number = int(data[0:32][::-1], 2)

@@ -4,6 +4,7 @@ Brands: Zanbo (ZABC86-1), Unknown (OSW-1-3 and OTW-1-3).
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -27,7 +28,7 @@ pulse_lengths = [288, 864, 8964]
 pulse_count = 50
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:

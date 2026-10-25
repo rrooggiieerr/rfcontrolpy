@@ -1,6 +1,7 @@
 """Weather7 protocol: Auriol IAN 9183 temperature and humidity sensor."""
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -21,7 +22,7 @@ pulse_lengths = [456, 1990, 3940, 9236]
 pulse_count = 66
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode raw pulse data into weather sensor readings.
 
     Args:

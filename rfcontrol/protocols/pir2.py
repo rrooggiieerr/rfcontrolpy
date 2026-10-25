@@ -4,6 +4,7 @@ Brands: Multi Kon Trade B00RTDMC4S.
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -27,7 +28,7 @@ pulse_lengths = [451, 1402, 14356]
 pulse_count = 50
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:

@@ -5,6 +5,7 @@ https://old-wiki.somakeit.org.uk/A/LightwaveRF_RF_Protocol
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -28,7 +29,7 @@ pulse_lengths = [204, 328, 1348, 10320]
 pulse_count = 144
 
 
-def nibble_to_number(nibble):
+def nibble_to_number(nibble: int) -> int:
     """Convert a LightwaveRF encoded nibble to its value, 0-15."""
     return {
         0x7A: 0x00,
@@ -50,7 +51,7 @@ def nibble_to_number(nibble):
     }[nibble]
 
 
-def number_to_nibble(number):
+def number_to_nibble(number: int) -> int:
     """Convert a value, 0-15, to its LightwaveRF encoded nibble."""
     return (
         0x7A,
@@ -72,7 +73,7 @@ def number_to_nibble(number):
     )[number]
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:
@@ -124,7 +125,7 @@ def encode(
     state: bool | None = None,
     dimlevel: int | None = None,
     all: bool = False,
-):
+) -> str:
     """Encode a message into a pulse sequence.
 
     Args:

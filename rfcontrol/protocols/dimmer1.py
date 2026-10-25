@@ -5,6 +5,7 @@ Same frame as switch1 plus a 4-bit dim level.
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -34,7 +35,7 @@ pulse_lengths = [260, 1300, 2700, 10400]
 pulse_count = 148
 
 
-def decode(pulses: str):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:
@@ -80,7 +81,7 @@ def encode(
     state: bool | None = None,
     dimlevel: int | None = None,
     all: bool = False,
-):
+) -> str:
     """Encode a message into a pulse sequence.
 
     Args:

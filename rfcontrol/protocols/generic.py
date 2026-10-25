@@ -1,6 +1,7 @@
 """Generic protocol: homemade sensors sending a typed numeric value."""
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -21,7 +22,7 @@ pulse_lengths = [671, 2049, 4346, 10208]
 pulse_count = 198
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Pulses could be:

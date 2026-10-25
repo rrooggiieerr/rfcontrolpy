@@ -9,6 +9,7 @@ wind or rain data.
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -29,7 +30,7 @@ pulse_lengths = [534, 2000, 4000, 9000]
 pulse_count = 74
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode raw pulse data into weather sensor readings.
 
     Args:

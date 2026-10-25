@@ -4,6 +4,7 @@ The sensor sends the temperature in °F; it is converted to °C.
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -25,7 +26,7 @@ pulse_lengths = [526, 990, 1903, 4130, 7828, 16076]
 pulse_count = 92
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode raw pulse data into weather sensor readings.
 
     Args:

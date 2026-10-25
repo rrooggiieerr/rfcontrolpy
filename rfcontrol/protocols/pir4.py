@@ -1,6 +1,7 @@
 """PIR4 protocol: SelectPlus doorbell, handled as a PIR sensor."""
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -24,7 +25,7 @@ pulse_lengths = [371, 1081, 5803]
 pulse_count = 36
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:

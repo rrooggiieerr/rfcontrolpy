@@ -1,6 +1,7 @@
 """Weather13 protocol: Xiron temperature and humidity sensor 2."""
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -28,7 +29,7 @@ TEMP_START, TEMP_END = 12, 23
 HUMIDITY_START, HUMIDITY_END = 28, 35
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode raw pulse data into weather sensor readings.
 
     Args:
@@ -41,7 +42,7 @@ def decode(pulses):
         can't be decoded.
     """
 
-    def binary_to_signed_number(bit_string, start, end):
+    def binary_to_signed_number(bit_string: str, start: int, end: int) -> int:
         """Convert binary substring [start:end] to signed integer.
 
         Assumes MSB is the sign bit.

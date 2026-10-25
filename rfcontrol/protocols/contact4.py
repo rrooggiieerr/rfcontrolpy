@@ -4,6 +4,7 @@ Brands: GS-IWDS07.
 """
 
 import logging
+from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
@@ -30,7 +31,7 @@ pulse_lengths = [468, 1364, 14096]
 pulse_count = 50
 
 
-def decode(pulses):
+def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:
@@ -64,7 +65,7 @@ def decode(pulses):
     return decoded
 
 
-def encode(id: int, state: bool, low_battery: bool = False):
+def encode(id: int, state: bool, low_battery: bool = False) -> str:
     """Encode a message into a pulse sequence.
 
     Args:
