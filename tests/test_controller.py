@@ -3,6 +3,8 @@
 
 import logging
 
+import pytest
+
 from rfcontrol import controller
 
 logger = logging.getLogger(__name__)
@@ -2112,6 +2114,17 @@ def test_encode_message_switch25() -> None:
         results["pulses"]
         == "101010101010101010101010101010100101010101010101011010100110011002"
     )
+
+
+def test_encode_message_unknown_protocol() -> None:
+    with pytest.raises(controller.RFControlProtocolNotFoundError):
+        controller.encode_pulses("unknown", {"id": 0})
+
+
+def test_encode_message_decode_only_protocol() -> None:
+    # pir1 can only be received, it has no encode function.
+    with pytest.raises(controller.RFControlSendNotSupportedError):
+        controller.encode_pulses("pir1", {"id": 1, "unit": 1, "state": True})
 
 
 # def test_encode_message_switch29() -> None:

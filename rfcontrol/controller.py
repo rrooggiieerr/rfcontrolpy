@@ -200,7 +200,7 @@ def encode_pulses(protocol_name: str, message: dict[str, Any]) -> dict[str, Any]
             f"Could not find a protocol named {protocol_name}"
         )
 
-    if protocol.encode is None:
+    if getattr(protocol, "encode", None) is None:
         raise RFControlSendNotSupportedError("The protocol has no send support")
 
     return {
