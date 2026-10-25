@@ -1,0 +1,7 @@
+codespell
+mypy
+pytest
+pytest-asyncio
+pylint
+pylint-per-file-ignores
+pre-commit
