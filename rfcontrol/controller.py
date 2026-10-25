@@ -9,8 +9,6 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-import rfcontrol.protocols
-
 logger = logging.getLogger(__name__)
 
 protocols = [
@@ -27,10 +25,10 @@ def __getattr__(name: str):
     ``controller.<protocol>`` or ``getattr(controller, "<protocol>")``, like
     homeduino does.
     """
-    for protocol in protocols:
-        if protocol.name == name:
-            return protocol
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    protocol = get_protocol(name)
+    if protocol is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    return protocol
 
 
 class RFControlError(Exception):
@@ -215,5 +213,8 @@ def get_all_protocols() -> list[ModuleType]:
 
 
 def get_protocol(protocol_name: str) -> ModuleType | None:
-    """Get protocol with given name."""
-    return getattr(rfcontrol.protocols, protocol_name, None)
+    """Get protocol with given name, or None if there is no such protocol."""
+    for protocol in protocols:
+        if protocol.name == protocol_name:
+            return protocol
+    return None

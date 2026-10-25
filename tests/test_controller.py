@@ -2262,3 +2262,19 @@ def test_sort_compressed_pulses() -> None:
         [480, 1020, 1988, 3976],
         "02010201010201010101010101010101020101020201020102020202010201010202010203",
     )
+
+
+def test_get_protocol() -> None:
+    protocol = controller.get_protocol("switch1")
+    assert protocol is not None
+    assert protocol.name == "switch1"
+
+
+def test_get_protocol_unknown() -> None:
+    assert controller.get_protocol("unknown") is None
+
+
+def test_get_protocol_not_a_protocol() -> None:
+    # Other names in the rfcontrol.protocols package are not protocols.
+    assert controller.get_protocol("RFControlProtocolTypes") is None
+    assert controller.get_protocol("Path") is None
