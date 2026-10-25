@@ -1,12 +1,8 @@
-"""
-Support for LightwaveRF dimmers
+"""Support for LightwaveRF dimmers.
 
 http://www.benjiegillam.com/2013/02/lightwaverf-rf-protocol/
-https://old-wiki.somakeit.org.uk/index.php/LightwaveRF_RF_Protocol
+https://old-wiki.somakeit.org.uk/A/LightwaveRF_RF_Protocol
 """
-
-# pylint: disable=duplicate-code
-# pylint: disable=missing-function-docstring
 
 import logging
 
@@ -33,6 +29,7 @@ pulse_count = 144
 
 
 def nibble_to_number(nibble):
+    """Convert a LightwaveRF encoded nibble to its value, 0-15."""
     return {
         0x7A: 0x00,
         0x76: 0x01,
@@ -54,6 +51,7 @@ def nibble_to_number(nibble):
 
 
 def number_to_nibble(number):
+    """Convert a value, 0-15, to its LightwaveRF encoded nibble."""
     return (
         0x7A,
         0x76,
@@ -75,9 +73,16 @@ def number_to_nibble(number):
 
 
 def decode(pulses):
-    # Pulses is something like:
-    #
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes.
+            example ``"010101010102010201010101020102020102010101010101010201010202010201010101020101020101010201020101010102010102010101020102010101010201010201010103"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``state`` and ``dimlevel``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -85,7 +90,7 @@ def decode(pulses):
         return None
 
     # Binary is now something like:
-    #
+    # 11111010111101001011111110110010111101101110101111011011101011110110111
 
     # Now we extract the data from that string.
     dimlevel = nibble_to_number(int(binary[1:8], 2)) * 16
@@ -114,17 +119,33 @@ def decode(pulses):
 
 
 def encode(
-    id: int, unit: int, state: bool = None, dimlevel: int = None, all: bool = False
+    id: int,
+    unit: int,
+    state: bool | None = None,
+    dimlevel: int | None = None,
+    all: bool = False,
 ):
-    if 0 < dimlevel <= 31:
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Remote ID.
+        unit: Unit code.
+        state: Ignored; derived from ``dimlevel``.
+        dimlevel: Dim level, 1-31 for on, anything else for off.
+        all: Ignored by this protocol.
+
+    Returns:
+        Pulse sequence string.
+    """
+    if dimlevel is not None and 0 < dimlevel <= 31:
         _level = dimlevel + 0x80
-        state = binary2pulses(f"{0x76:07b}", binary2pulses_mapping)
+        state_pulses = binary2pulses(f"{0x76:07b}", binary2pulses_mapping)
     else:
         _level = 0
-        state = binary2pulses(f"{0x7A:07b}", binary2pulses_mapping)
+        state_pulses = binary2pulses(f"{0x7A:07b}", binary2pulses_mapping)
 
     level1 = binary2pulses(
-        f"{number_to_nibble((_level//16) & 0x0F):07b}", binary2pulses_mapping
+        f"{number_to_nibble((_level // 16) & 0x0F):07b}", binary2pulses_mapping
     )
     level2 = binary2pulses(
         f"{number_to_nibble(_level & 0x0F):07b}", binary2pulses_mapping
@@ -133,26 +154,27 @@ def encode(
     unit_code = binary2pulses(f"{number_to_nibble(unit):07b}", binary2pulses_mapping)
 
     id1 = binary2pulses(
-        f"{number_to_nibble((id//1048576) & 0x0F):07b}",
+        f"{number_to_nibble((id // 1048576) & 0x0F):07b}",
         binary2pulses_mapping,
     )
     id2 = binary2pulses(
-        f"{number_to_nibble((id//65536) & 0x0F):07b}",
+        f"{number_to_nibble((id // 65536) & 0x0F):07b}",
         binary2pulses_mapping,
     )
     id3 = binary2pulses(
-        f"{number_to_nibble((id//4096) & 0x0F):07b}",
+        f"{number_to_nibble((id // 4096) & 0x0F):07b}",
         binary2pulses_mapping,
     )
     id4 = binary2pulses(
-        f"{number_to_nibble((id//256) & 0x0F):07b}",
+        f"{number_to_nibble((id // 256) & 0x0F):07b}",
         binary2pulses_mapping,
     )
     id5 = binary2pulses(
-        f"{number_to_nibble((id//16) & 0x0F):07b}",
+        f"{number_to_nibble((id // 16) & 0x0F):07b}",
         binary2pulses_mapping,
     )
     id6 = binary2pulses(f"{number_to_nibble(id & 0x0F):07b}", binary2pulses_mapping)
 
-    encoded = f"01{level1}{level2}{unit_code}{state}{id1}{id2}{id3}{id4}{id5}{id6}03"
-    return encoded
+    return (
+        f"01{level1}{level2}{unit_code}{state_pulses}{id1}{id2}{id3}{id4}{id5}{id6}03"
+    )

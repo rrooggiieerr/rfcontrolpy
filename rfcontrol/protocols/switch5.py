@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Switch5 protocol: 20-bit ID switches.
+
+Brands: Eurodomest.
+"""
 
 import logging
 
@@ -30,9 +31,16 @@ pulse_count = 50
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 10010101101010010110010110101001010101011010101002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"10010101101010010110010110101001010101011010101002"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``state`` and ``all``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -47,13 +55,13 @@ def decode(pulses):
     # | ID                   | UnitCode | inverted state |
     unit_code = int(binary[20:23], 2)
     unit = (1, 2, 3, 0, 4, 0, 0, 0)[unit_code]
-    all = unit_code not in [0, 1, 2, 4]
-    state = (binary[23] == "1") if all else (binary[23] == "0")
+    all_units = unit_code not in [0, 1, 2, 4]
+    state = (binary[23] == "1") if all_units else (binary[23] == "0")
 
     decoded = {
         "id": int(binary[0:20], 2),
         "unit": unit,
-        "all": all,
+        "all": all_units,
         "state": state,
     }
     logger.debug(decoded)
@@ -61,6 +69,18 @@ def decode(pulses):
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Device ID.
+        unit: Unit code, 1-4.
+        state: True for on, False for off.
+        all: Address all units in the group.
+
+    Returns:
+        Pulse sequence string.
+    """
+    unit_code: int | None
     encoded = binary2pulses(f"{id:020b}", binary2pulses_mapping)
     if all:
         unit_code = 6 if state else 7

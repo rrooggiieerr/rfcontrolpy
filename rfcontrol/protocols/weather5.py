@@ -1,34 +1,12 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Weather5 protocol: multi-sensor weather stations.
 
-# Supported stations
-# - Auriol H13726
-# - Ventus WS155
-# - Hama EWS 1500
-# - Meteoscan W155/W160
-# - Alecto WS4500
-# - Alecto WS3500
-# - Ventus W044
-# - Balance RF-WS105
-#
-# pulses could be:
-# '01020101010201020102010101020202020202010101010102020201010202010202020203'
-# we first map the pulse sequences to binary
-# binary is now something like: '01000101 0100 011111100000 11100110 1111'
-# based on this example : T12,6 H65
-# 01000101 0100 011111100000 11100110 1111
-# 01000101 : Station ID (random after restart)
-# 0100 : states
-# 01111110000011100110 : data
-# 1111 : check sum (n8 = ( 0xf - n0 - n1 - n2 - n3 - n4 - n5 - n6 - n7) & 0xf)
-# the states showing which data is transmitted
-# 0  1  0  0
-# |  |  |  |-> 0: Scheduled transmission.
-# |  |  |  |-> 1: The transmission was initiated by pressing the button inside the sensor unit
-# |  |--|----> 00,01,10: Temperature and Humidity is transmitted. 11: Non temp/hum data
-# |----------> 0: Sensor's battery voltage is normal. 1: Battery voltage is below ~2.6 V.
+Supported stations: Auriol H13726, Ventus WS155, Hama EWS 1500,
+Meteoscan W155/W160, Alecto WS4500, Alecto WS3500, Ventus W044,
+Balance RF-WS105.
 
+Depending on the state bits a message carries temperature and humidity,
+wind or rain data.
+"""
 
 import logging
 
@@ -52,9 +30,39 @@ pulse_count = 74
 
 
 def decode(pulses):
+    """Decode raw pulse data into weather sensor readings.
+
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"01020101010201020102010101020202020202010101010102020201010202010202020203"``.
+
+    Returns:
+        Dict with ``id`` and ``lowBattery``, plus, depending on the message
+        type, ``temperature`` and ``humidity``, ``avgAirspeed``,
+        ``windDirection`` and ``windGust``, or ``rain``. None if the pulses
+        don't match the protocol.
+    """
+    # We first map the pulse sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
+
     if binary is None:
         return None
+
+    # Binary is now something like:
+    # 010001010100011111100000111001101111
+
+    # based on this example : T12,6 H67
+    # 01000101 0100 011111100000 11100110 1111
+    # 01000101 : Station ID (random after restart)
+    # 0100 : states
+    # 01111110000011100110 : data
+    # 1111 : check sum (n8 = ( 0xf - n0 - n1 - n2 - n3 - n4 - n5 - n6 - n7) & 0xf)
+    # the states showing which data is transmitted
+    # 0  1  0  0
+    # |  |  |  |-> 0: Scheduled transmission.
+    # |  |  |  |-> 1: The transmission was initiated by pressing the button inside the sensor unit
+    # |  |--|----> 00,01,10: Temperature and Humidity is transmitted. 11: Non temp/hum data
+    # |----------> 0: Sensor's battery voltage is normal. 1: Battery voltage is below ~2.6 V.
 
     # id (bits 0..7) LSB-first
     id_ = int(binary[0:8][::-1], 2)

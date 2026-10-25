@@ -1,7 +1,8 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
-# pylint: disable=line-too-long
+"""Dimmer1 protocol: self-learning dimmers.
+
+Brands: CoCo Technologies, D-IO (Chacon), Intertechno, KlikAanKlikUit, Nexa.
+Same frame as switch1 plus a 4-bit dim level.
+"""
 
 import logging
 
@@ -34,9 +35,17 @@ pulse_count = 148
 
 
 def decode(pulses: str):
-    # Pulses is something like:
-    # 0200010001010000010001010000010001000101000100010001000100000101000100010000010001000100010001010001000001000100000001000100010001010001000100010003
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"0200010001010000010001010000010001000101000100010001000100000101000100010000010001000100010001010001000001000101000001000100010001010001000100010003"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``all``, ``state`` and ``dimlevel``;
+        ``state`` is None when the message doesn't change it,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -50,7 +59,7 @@ def decode(pulses: str):
     # | 00100100011111011100000110 |   0 |     N | 0000 |  1111 |
     # | 00100011110100100010011010 |   0 |     1 | 0000 |  0001 |
     # | ID                         | All | State | unit | level |
-    state = None
+    state: bool | None = None
     if binary[27] != "N":
         state = binary[27] == "1"
 
@@ -66,8 +75,24 @@ def decode(pulses: str):
 
 
 def encode(
-    id: int, unit: int, state: bool = None, dimlevel: int = None, all: bool = False
+    id: int,
+    unit: int,
+    state: bool | None = None,
+    dimlevel: int | None = None,
+    all: bool = False,
 ):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Device ID.
+        unit: Unit code.
+        state: True for on, False for off, None to leave unchanged.
+        dimlevel: Dim level, 0-15.
+        all: Address all units in the group.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = "02"
     encoded += binary2pulses(f"{id:026b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["1"] if all else binary2pulses_mapping["0"]

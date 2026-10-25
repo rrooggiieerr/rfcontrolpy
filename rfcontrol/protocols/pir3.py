@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""PIR3 protocol: motion sensor.
+
+Brands: Inter-Union.
+"""
 
 import logging
 
@@ -16,8 +17,8 @@ pulses2binary_mapping = [
     ["02", ""],  # Footer
 ]
 
-# Mapping for encoding
-binary2pulses_mapping = {}
+# Mapping for encoding.
+binary2pulses_mapping: dict[str, str] = {}
 
 name = "pir3"
 type = RFControlProtocolTypes.PIR
@@ -27,9 +28,16 @@ pulse_count = 66
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 011010011010010110101010010101101010011001100110100101100101101002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"011010011010010110101010010101101010011001100110100101100101101002"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``; ``state`` is always True,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 

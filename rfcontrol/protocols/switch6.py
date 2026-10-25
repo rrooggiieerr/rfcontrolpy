@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Switch6 protocol: system code / program code switches.
+
+Brands: Impuls.
+"""
 
 import logging
 
@@ -17,7 +18,7 @@ pulses2binary_mapping = [
     ["02", ""],  # Footer
 ]
 
-# Mappings for encoding.
+# Mapping for encoding.
 binary2pulses_mapping = {
     "0": "0110",
     "1": "1010",
@@ -33,9 +34,16 @@ pulse_count = 50
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 10010101101010010110010110101001010101011010101002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"10101010101010101010010101100110011001100110010102"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -43,11 +51,11 @@ def decode(pulses):
         return None
 
     # Binary is now something like:
-    # 011100011011000111110000
+    # 111111000001
 
     # Now we extract the data from that string.
-    # | 01110      | 01000       | 0              | 1
-    # | SystemCode | ProgramCode | invertes state | state
+    # | 11111      | 10000       | 0              | 1
+    # | SystemCode | ProgramCode | inverted state | state
     decoded = {
         "id": int(binary[:5][::-1], 2),
         "unit": int(binary[5:10][::-1], 2),
@@ -58,6 +66,17 @@ def decode(pulses):
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: System code.
+        unit: Program code.
+        state: True for on, False for off.
+        all: Ignored by this protocol.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = binary2pulses(f"{id:05b}"[::-1], binary2pulses_mapping)
     encoded += binary2pulses(f"{unit:05b}"[::-1], binary2pulses_mapping2)
     encoded += binary2pulses_mapping2["0"] if state else binary2pulses_mapping2["1"]

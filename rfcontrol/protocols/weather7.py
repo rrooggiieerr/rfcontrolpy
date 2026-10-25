@@ -1,6 +1,4 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Weather7 protocol: Auriol IAN 9183 temperature and humidity sensor."""
 
 import logging
 
@@ -24,9 +22,16 @@ pulse_count = 66
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 01020102020201020101010101010102010101010202020101020202010102010101020103
+    """Decode raw pulse data into weather sensor readings.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"010202010201010202010101010101010101010202020102020202010202010103"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``temperature``, ``humidity`` and
+        ``lowBattery``, or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -34,12 +39,13 @@ def decode(pulses):
         return None
 
     # Binary is now something like:
-    # 010111010000000100001110011100100010
+    # 01101001100000000001110111101100
 
     # Now we extract the data from that string.
-    #   0-----7     8  14-15   16--------27   28----35
-    # | 10001101 | 11 | 000100001001 | 00111101 |
-    # |    ID    | BT | Temp.        | Humid.   |
+    #   0------7   8   9   10-11   12--------23   24---29   30-31
+    # | 01101001 | 1 | 0 | 00    | 000000011101 | 111011 | 00 |
+    # | ID       | B | ? | Unit  | Temp.        | Humid. | ?  |
+    # B: battery, 1 = OK
     decoded = {
         "id": int(binary[:8], 2),
         "unit": int(binary[10:12], 2),

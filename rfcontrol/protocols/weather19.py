@@ -1,6 +1,4 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Weather19 protocol: Landmann BBQ thermometer."""
 
 import logging
 
@@ -24,9 +22,16 @@ pulse_count = 66
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 020202010101010101010101010101020101010102010201020101010201020203
+    """Decode raw pulse data into weather sensor readings.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"020202010101010101010101010101020101010102010201020101010201020203"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``temperature``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 

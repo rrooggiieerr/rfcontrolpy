@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Switch4 protocol: unit / ID switches.
+
+Brands: Cogex, KlikAanKlikUit, Intertechno, Düwi Terminal.
+"""
 
 import logging
 
@@ -30,9 +31,16 @@ pulse_count = 50
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 01010110010101100110011001100110010101100110011002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"01010110010101100110011001100110010101100110011002"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -55,6 +63,17 @@ def decode(pulses):
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Device ID.
+        unit: Unit code.
+        state: True for on, False for off.
+        all: Ignored by this protocol.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = binary2pulses(f"{unit:05b}", binary2pulses_mapping)
     encoded += binary2pulses(f"{id:05b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["0"]

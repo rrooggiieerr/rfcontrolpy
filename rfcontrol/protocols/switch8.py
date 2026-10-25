@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Switch8 protocol: tri-state system code / program code switches.
+
+Brands: Rev.
+"""
 
 import logging
 
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 pulses2binary_mapping = [
     ["0101", "1"],  # Binary 1
     ["1010", "2"],  # Binary tri-state
-    ["0110", "0"],  # Bbinary 0
+    ["0110", "0"],  # Binary 0
     ["02", ""],  # Footer
 ]
 
@@ -28,6 +29,7 @@ pulse_count = 50
 
 
 def binary_to_char(data):
+    """Convert the tri-state program code to its unit letter."""
     character = 0
     i = len(data) - 1
     while i >= 0:
@@ -40,9 +42,16 @@ def binary_to_char(data):
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 01010101010101010110011001101010010101010101101002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"01010101010101010110011001101010010101010101101002"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``; ``unit`` is a string like ``'E10'``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -75,13 +84,24 @@ def decode(pulses):
     return decoded
 
 
-def encode(id: int, unit: int, state: bool, all: bool = False):
+def encode(id: int, unit: str, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: System code.
+        unit: Unit as a letter plus number, like ``'E10'``.
+        state: True for on, False for off.
+        all: Ignored by this protocol.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = binary2pulses(f"{id:05b}", binary2pulses_mapping)
 
     unit_char = ord(unit[0]) - 65
-    unit = int(unit[1:])
+    unit_int = int(unit[1:])
 
-    programcode1 = f"{unit:05b}"
+    programcode1 = f"{unit_int:05b}"
     programcode2 = programcode1[: 4 - unit_char] + "2" + programcode1[5 - unit_char :]
 
     encoded += binary2pulses(programcode2, binary2pulses_mapping)

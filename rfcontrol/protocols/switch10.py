@@ -1,7 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
-# pylint: disable=line-too-long
+"""Switch10 protocol: system code / group / unit switches.
+
+Brands: Easy Home Advanced.
+"""
 
 import logging
 
@@ -17,7 +17,7 @@ pulses2binary_mapping = [
     ["02", ""],  # footer
 ]
 
-# Mapping for encoding
+# Mapping for encoding.
 binary2pulses_mapping = {
     "0": "00",
     "1": "01",
@@ -31,9 +31,16 @@ pulse_count = 116
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 01010000000101010100000100010101010000000101010100000101000100000101000101010001000100010001010001000101000000010102
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"01010000000101010100000100010101010000000101010100000101000100000101000101010001000100010001010001000101000000010102"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``state`` and ``all``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
     logger.debug(binary)
@@ -67,6 +74,17 @@ def decode(pulses):
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Device ID.
+        unit: Unit code.
+        state: True for on, False for off.
+        all: Address all units in the group.
+
+    Returns:
+        Pulse sequence string.
+    """
     if all:
         groupcode1 = binary2pulses(f"{12:04b}", binary2pulses_mapping)
         groupcode2 = binary2pulses(f"{3:02b}", binary2pulses_mapping)

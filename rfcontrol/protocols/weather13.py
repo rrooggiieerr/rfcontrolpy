@@ -1,6 +1,4 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Weather13 protocol: Xiron temperature and humidity sensor 2."""
 
 import logging
 
@@ -9,7 +7,7 @@ from rfcontrol.protocols import RFControlProtocolTypes
 
 logger = logging.getLogger(__name__)
 
-# Mapping for decoding
+# Mapping for decoding.
 pulses2binary_mapping = [
     ["01", "0"],  # Binary 0
     ["02", "1"],  # Binary 1
@@ -18,7 +16,7 @@ pulses2binary_mapping = [
 
 name = "weather13"
 type = RFControlProtocolTypes.WEATHER
-brands = []
+brands = ["Xiron Temperature & Humidity Sensor 2"]
 pulse_lengths = [492, 992, 2028, 4012]
 pulse_count = 74
 
@@ -31,11 +29,21 @@ HUMIDITY_START, HUMIDITY_END = 28, 35
 
 
 def decode(pulses):
-    """Decode raw pulse data into weather sensor readings."""
+    """Decode raw pulse data into weather sensor readings.
+
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"02020202010101020201020101010101020202010202010202020202010102020101010103"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``temperature``, ``humidity`` and
+        ``lowBattery``, or None if the pulses don't match the protocol or
+        can't be decoded.
+    """
 
     def binary_to_signed_number(bit_string, start, end):
-        """
-        Convert binary substring [start:end] to signed integer.
+        """Convert binary substring [start:end] to signed integer.
+
         Assumes MSB is the sign bit.
         """
         bit_segment = bit_string[start : end + 1]
@@ -50,18 +58,18 @@ def decode(pulses):
 
         return value
 
-    # Convert pulses to binary
-    # pulses is something like: '02020202010101020201020101010101020202010202010202020202010102020101010103'
-    # we first map the pulse sequences to binary
+    # We first map the pulse sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
     if binary is None:
         logger.debug("Failed to convert pulses to binary.")
         return None
 
-    # binary is now something like: '11000111000000010010101011110011100100000'
-    # now we extract the temperature and humidity from that string
-    # 1100 0111 0000 0001 0010 1010 1111 0011 1001 0
-    # IIII IIII BxCC TTTT TTTT TTTT xxxx HHHH HHHH x
+    # Binary is now something like:
+    # 111100011010000011101101111100110000
+
+    # Now we extract the temperature and humidity from that string
+    # 1111 0001 1010 0000 1110 1101 1111 0011 0000
+    # IIII IIII BxCC TTTT TTTT TTTT xxxx HHHH HHHH
     # 0    4    8    12   16   20   24   28   32
     # I: Device ID, 8-bit unsigned Int
     # B: Low-Battery Flag (1-bit, 0=Battery OK, 1=Battery Low)
@@ -86,9 +94,9 @@ def decode(pulses):
             "lowBattery": low_battery,
         }
 
-        logger.debug(f"Decoded weather13: {decoded}")
-        return decoded
-
-    except (ValueError, IndexError) as e:
-        logger.exception(f"Error decoding weather13: {e}")
+        logger.debug("Decoded %s: %s", name, decoded)
+    except ValueError, IndexError:
+        logger.exception("Error decoding %s", name)
         return None
+    else:
+        return decoded

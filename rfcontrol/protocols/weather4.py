@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Weather4 protocol: Auriol temperature and humidity sensor.
+
+The sensor sends the temperature in °F; it is converted to °C.
+"""
 
 import logging
 
@@ -19,15 +20,22 @@ pulses2binary_mapping = [
 
 name = "weather4"
 type = RFControlProtocolTypes.WEATHER
-brands = []
+brands = ["Auriol"]
 pulse_lengths = [526, 990, 1903, 4130, 7828, 16076]
 pulse_count = 92
 
 
 def decode(pulses):
-    # pulses could be:
-    # '11111111040203020202020202030202020203020302030203030303020303020303020202020302020202020305'
+    """Decode raw pulse data into weather sensor readings.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"11111111040203020202020202030202020203020302030203030303020303020303020202020302020202020305"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``temperature``, ``humidity`` and
+        ``lowBattery``, or None if the pulses don't match the protocol.
+    """
     # We first map the pulse sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -42,8 +50,8 @@ def decode(pulses):
     # 11101110 : Station ID (random after restart)
     # 0101 : Check Sum
     # 0101 : Battery 0000=full(3V) 0100=2,6V
-    # 0100 0000 0110 : temperature is sent by the sensor in °F (and not °C)
-    # 0111-0001 : humidity first col is tenner, second col is one (einer) { 0111=7  0001=1  }= 71%H
+    # 0100 0000 0110 : temperature is sent by the sensor in °F and not °C
+    # 0111-0001 : humidity first nibble is the tens, second nibble the units {0111=7  0001=1}= 71%H
     # 0001 : Channel (0001 = 1, xxxx = ?, xxxx = ?)
     # The lowest value that the protocol support is 90°F (000000000000).
     # In our example it give us 0110 0001 1000
@@ -57,10 +65,7 @@ def decode(pulses):
     h0 = int(binary[28:32], 2)
     h1 = int(binary[32:36], 2)
     humidity = h0 * 10 + h1
-    if (3 - (int(binary[12:16], 2) / 10)) < 2.5:
-        low_battery = True
-    else:
-        low_battery = False
+    low_battery = (3 - (int(binary[12:16], 2) / 10)) < 2.5
 
     decoded = {
         "id": int(binary[:8], 2),

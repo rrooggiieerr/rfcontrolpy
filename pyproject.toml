@@ -512,6 +512,7 @@ combine-as-imports = true
 split-on-trailing-comma = false
 
 [tool.ruff.lint.per-file-ignores]
+"rfcontrol/protocols/*.py" = ["A001"]
 "tests/**" = ["D", "SLF", "TID251", "TID252"]
 
 [tool.ruff.lint.mccabe]

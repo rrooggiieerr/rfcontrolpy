@@ -1,6 +1,4 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""PIR4 protocol: SelectPlus doorbell, handled as a PIR sensor."""
 
 import logging
 
@@ -16,8 +14,8 @@ pulses2binary_mapping = [
     ["2", ""],  # Footer
 ]
 
-# Mapping for encoding
-binary2pulses_mapping = {}
+# Mapping for encoding.
+binary2pulses_mapping: dict[str, str] = {}
 
 name = "pir4"
 type = RFControlProtocolTypes.PIR
@@ -27,14 +25,24 @@ pulse_count = 36
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 011010011010010110101010010101101010011001100110100101100101101002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"110100110101001101010011001010101012"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``; ``state`` is always True,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
+    if binary is None:
+        return None
+
     # Binary is now something like:
-    # 10010011000011100010101001101100
+    # 11010011010100110101001100101010101
 
     # Now we extract the data from that string.
     decoded = {

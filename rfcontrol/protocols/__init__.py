@@ -1,23 +1,22 @@
-"""
-RF Protocols implement (part of) the protocols of the original CoffeeScript/nodejs implementation
+"""RF protocols, a partial port of the CoffeeScript/Node.js rfcontroljs implementation.
+
+Not all protocols of the original implementation have been ported yet.
+
 https://github.com/pimatic/rfcontroljs/tree/master/src/protocols
 """
 
-import glob
 from enum import StrEnum
-from os.path import basename, dirname, isfile, join
+from pathlib import Path
 
 __all__ = [
-    basename(f)[:-3]
-    for f in glob.glob(join(dirname(__file__), "*.py"))
-    if isfile(f) and not basename(f).startswith("_")
+    f.stem
+    for f in Path(__file__).parent.glob("*.py")
+    if f.is_file() and not f.name.startswith("_")
 ]
 
 
 class RFControlProtocolTypes(StrEnum):
-    """
-    The type of protocols.
-    """
+    """The type of protocols."""
 
     ALARM = "alarm"
     AWNING = "awning"

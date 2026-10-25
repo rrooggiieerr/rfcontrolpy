@@ -1,48 +1,52 @@
-"""
-Python port of the original CoffeeScript/nodejs code
+"""Decode and encode RF pulse sequences.
+
+Python port of the original CoffeeScript/Node.js rfcontroljs controller.
 """
 
-# pylint: disable=wildcard-import
-# pylint: disable=unused-wildcard-import
-
-import glob
+import importlib
 import logging
-from os.path import basename, dirname, isfile, join
+from pathlib import Path
+from types import ModuleType
+from typing import Any
 
 import rfcontrol.protocols
-from rfcontrol.protocols import *
 
 logger = logging.getLogger(__name__)
 
 protocols = [
-    getattr(rfcontrol.protocols, basename(f)[:-3])
-    for f in glob.glob(join(dirname(__file__), "protocols/*.py"))
-    if isfile(f) and not basename(f).startswith("_")
+    importlib.import_module(f"rfcontrol.protocols.{f.stem}")
+    for f in (Path(__file__).parent / "protocols").glob("*.py")
+    if f.is_file() and not f.name.startswith("_")
 ]
 
 
+def __getattr__(name: str):
+    """Give access to the protocol modules as attributes of this module.
+
+    Kept for backward compatibility with code that looks protocols up as
+    ``controller.<protocol>`` or ``getattr(controller, "<protocol>")``, like
+    homeduino does.
+    """
+    for protocol in protocols:
+        if protocol.name == name:
+            return protocol
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 class RFControlError(Exception):
-    """
-    Generic RF Control error.
-    """
+    """Generic RF Control error."""
 
 
 class RFControlProtocolNotFoundError(RFControlError):
-    """
-    This error is raised when a protocol can not be found.
-    """
+    """This error is raised when a protocol can not be found."""
 
 
 class RFControlSendNotSupportedError(RFControlError):
-    """
-    This error is raised when a protocol only supports receiving and not sending.
-    """
+    """This error is raised when a protocol only supports receiving and not sending."""
 
 
 def does_protocol_match(pulse_lengths, pulse_sequence, protocol) -> bool:
-    """
-    Test if a protocol matches the pulse lengths and pulse sequence
-    """
+    """Test if a protocol matches the pulse lengths and pulse sequence."""
     if protocol.pulse_count != len(pulse_sequence):
         return False
 
@@ -57,24 +61,17 @@ def does_protocol_match(pulse_lengths, pulse_sequence, protocol) -> bool:
     return True
 
 
-def sort_indices(array: []):
-    """
-    Sort the indexes of an array by order of element value.
-    """
-    sorted_indices = [i for i, _ in sorted(enumerate(array), key=lambda x: x[1])]
-    # logger.debug("sorted indices: %s", sorted_indices)
-
-    return sorted_indices
+def sort_indices(array: list[int]):
+    """Sort the indexes of an array by order of element value."""
+    return [i for i, _ in sorted(enumerate(array), key=lambda x: x[1])]
 
 
-def compress_timings(timings: []):
-    """
-    Compress timings.
-    """
+def compress_timings(timings: list[int]):
+    """Compress timings."""
     pulses = ""
-    buckets = []
-    sums = []
-    counts = []
+    buckets: list[int] = []
+    sums: list[int] = []
+    counts: list[int] = []
 
     for timing in timings:
         # Search for a bucket.
@@ -99,9 +96,7 @@ def compress_timings(timings: []):
 
 
 def prepare_compressed_pulses(input: str):
-    """
-    Prepares compressed pulses.
-    """
+    """Prepares compressed pulses."""
     # Input is something like:
     # 268 2632 1282 10168 0 0 0 0 010002000202000002000200020200020002...
     # The first 8 numbers are the pulse length and the last string is the pulse sequence
@@ -116,10 +111,8 @@ def prepare_compressed_pulses(input: str):
     return sort_compressed_pulses(pulse_lengths, pulse_sequence)
 
 
-def sort_compressed_pulses(pulse_lengths: [], pulse_sequence: str):
-    """
-    Sort the pulse lengths from short to long and updates indices in pulse sequence accordingly.
-    """
+def sort_compressed_pulses(pulse_lengths: list[int], pulse_sequence: str):
+    """Sort the pulse lengths from short to long and updates indices in pulse sequence accordingly."""
     # Sort the pulse lengths from short to long.
     sorted_indices = sort_indices(pulse_lengths)
     pulse_lengths.sort()
@@ -128,22 +121,20 @@ def sort_compressed_pulses(pulse_lengths: [], pulse_sequence: str):
     reindexed_pulse_sequence = ""
     for c in pulse_sequence:
         reindexed_pulse_sequence += str(sorted_indices.index(int(c)))
-    # logger.debug("reindexed pulse sequence: %s", reindexed_pulse_sequence)
 
     return (pulse_lengths, reindexed_pulse_sequence)
 
 
-def fix_pulses(pulse_lengths: [], pulse_sequence: str):
-    """
-    Merge pulse timings with similar length.
+def fix_pulses(pulse_lengths: list[int], pulse_sequence: str):
+    """Merge pulse timings with similar length.
 
-    Timings are considered the same if they differ less then a factor of 2.
+    Timings are considered the same if they differ less than a factor of 2.
     """
-    # If we have less then 3 different pulseLenght there is nothing to fix.
+    # If we have less than 3 different pulse lengths there is nothing to fix.
     if len(pulse_lengths) <= 3:
         return None
 
-    # Consider timing as the same if they differ less then a factor of 2.
+    # Consider timing as the same if they differ less than a factor of 2.
     i = 1
     while i < len(pulse_lengths):
         if pulse_lengths[i - 1] * 2 < pulse_lengths[i]:
@@ -158,24 +149,21 @@ def fix_pulses(pulse_lengths: [], pulse_sequence: str):
         break
 
     # Nothing to do...
-    if i is len(pulse_lengths):
+    if i == len(pulse_lengths):
         return None
 
     # Adapt pulses
     new_pulse_sequence = pulse_sequence
     while i < len(pulse_lengths):
-        new_pulse_sequence = new_pulse_sequence.replace(f"{i}", f"{i-1}")
+        new_pulse_sequence = new_pulse_sequence.replace(f"{i}", f"{i - 1}")
         i += 1
     return (new_pulse_lengths, new_pulse_sequence)
 
 
-def decode_pulses(pulse_lengths: [], pulse_sequence: str):
-    """
-    Decode pulse sequence to protocol
-    """
+def decode_pulses(pulse_lengths: list[int], pulse_sequence: str):
+    """Decode a pulse sequence to protocol messages."""
     # Filter out 0 length pulses
     pulse_lengths = [i for i in pulse_lengths if i > 0]
-    # logger.debug("Non 0 pulse lengths: %s", pulse_lengths)
 
     pulse_lengths, pulse_sequence = sort_compressed_pulses(
         pulse_lengths, pulse_sequence
@@ -184,7 +172,7 @@ def decode_pulses(pulse_lengths: [], pulse_sequence: str):
     return _decode_pulses(pulse_lengths, pulse_sequence)
 
 
-def _decode_pulses(pulse_lengths: [], pulse_sequence: str):
+def _decode_pulses(pulse_lengths: list[int], pulse_sequence: str):
     results = []
     for protocol in protocols:
         if does_protocol_match(pulse_lengths, pulse_sequence, protocol):
@@ -203,10 +191,8 @@ def _decode_pulses(pulse_lengths: [], pulse_sequence: str):
     return results
 
 
-def encode_pulses(protocol_name: str, message: str):
-    """
-    Encode protocol to pulse sequence
-    """
+def encode_pulses(protocol_name: str, message: dict[str, Any]) -> dict[str, Any]:
+    """Encode a protocol message to a pulse sequence."""
     protocol = get_protocol(protocol_name)
 
     if protocol is None:
@@ -223,15 +209,11 @@ def encode_pulses(protocol_name: str, message: str):
     }
 
 
-def get_all_protocols() -> []:
-    """
-    Get all implemented protocols.
-    """
+def get_all_protocols() -> list[ModuleType]:
+    """Get all implemented protocols."""
     return protocols
 
 
-def get_protocol(protocol_name: str) -> str | None:
-    """
-    Get protocol with given name.
-    """
+def get_protocol(protocol_name: str) -> ModuleType | None:
+    """Get protocol with given name."""
     return getattr(rfcontrol.protocols, protocol_name, None)

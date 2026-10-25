@@ -1,6 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Switch7 protocol: 3-bit unit / 3-bit ID switches.
+
+Brands: eHome.
+"""
 
 import logging
 
@@ -31,9 +32,16 @@ pulse_count = 50
 
 
 def decode(pulses):
-    # Pulses is something like:
-    #
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"01010101010101100110011001100110011001100110011002"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -41,9 +49,12 @@ def decode(pulses):
         return None
 
     # Binary is now something like:
-    #
+    # 111000000000
 
     # Now we extract the data from that string.
+    # |     1 |  110 |  000 | 00000 |
+    # | State | Unit |   ID | fixed |
+    # Unit and ID are LSB first.
     decoded = {
         "id": int(binary[4:7][::-1], 2),
         "unit": int(binary[1:4][::-1], 2),
@@ -54,6 +65,17 @@ def decode(pulses):
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Device ID.
+        unit: Unit code.
+        state: True for on, False for off.
+        all: Ignored by this protocol.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = "0101" if state else "1010"
     encoded += binary2pulses(f"{unit:03b}"[::-1], binary2pulses_mapping)
     encoded += binary2pulses(f"{id:03b}"[::-1], binary2pulses_mapping)

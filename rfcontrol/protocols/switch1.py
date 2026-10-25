@@ -1,7 +1,7 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
-# pylint: disable=line-too-long
+"""Switch1 protocol: self-learning switches.
+
+Brands: CoCo Technologies, D-IO (Chacon), Intertechno, KlikAanKlikUit, Nexa.
+"""
 
 import logging
 
@@ -32,9 +32,16 @@ pulse_count = 132
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 020001000101000001000100010100010001000100000101000001000101000001000100010100000100010100010000010100000100010100000100010001000103
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"020001000101000001000100010100010001000100000101000001000101000001000100010100000100010100010000010100000100010100000100010001000103"``.
+
+    Returns:
+        Dict with ``id``, ``unit``, ``state`` and ``all``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -47,7 +54,6 @@ def decode(pulses):
     # Now we extract the data from that string.
     # | 00100011110100100010011010 |   0 |     1 | 0000 |
     # | ID                         | All | State | Unit |
-    # logger.debug(f'{binary[0:26]} {binary[26]} {binary[27]} {binary[28:]}')
     decoded = {
         "id": int(binary[:26], 2),
         "unit": int(binary[28:], 2),
@@ -59,6 +65,17 @@ def decode(pulses):
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Args:
+        id: Device ID.
+        unit: Unit code.
+        state: True for on, False for off.
+        all: Address all units in the group.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = "02"
     encoded += binary2pulses(f"{id:026b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["1"] if all else binary2pulses_mapping["0"]

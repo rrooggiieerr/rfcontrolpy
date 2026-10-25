@@ -1,6 +1,4 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Generic2 protocol: homemade sensors with battery level and checksum."""
 
 import logging
 
@@ -24,9 +22,17 @@ pulse_count = 66
 
 
 def decode(pulses):
-    # Pulses could be:
-    # 101001101010100110101010100101010101101010101010011010101010101002
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"101001101010100110101010100101010101101010101010011010101010101002"``.
+
+    Returns:
+        Dict with ``id``, ``type``, ``value``, ``freq``, ``battery`` and
+        ``checksum``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -39,7 +45,7 @@ def decode(pulses):
     # Now we extract the data from that string.
     decoded = {
         "id": int(binary[24:32][::-1], 2),
-        "type": int(binary[20:23][::-1], 2),
+        "type": int(binary[20:24][::-1], 2),
         "value": int(binary[10:20][::-1], 2),
         "freq": int(binary[6:10][::-1], 2),
         "battery": 33 * int(binary[4:6][::-1], 2),

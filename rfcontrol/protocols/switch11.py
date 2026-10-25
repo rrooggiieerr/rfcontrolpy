@@ -1,6 +1,4 @@
-# pylint: disable=duplicate-code
-# pylint: disable=missing-module-docstring
-# pylint: disable=missing-function-docstring
+"""Switch11 protocol: McPower switches."""
 
 import logging
 
@@ -16,7 +14,7 @@ pulses2binary_mapping = [
     ["02", ""],  # Footer
 ]
 
-# Mapping for encoding
+# Mapping for encoding.
 binary2pulses_mapping = {"1": "01", "0": "10"}
 
 name = "switch11"
@@ -27,9 +25,16 @@ pulse_count = 66
 
 
 def decode(pulses):
-    # Pulses is something like:
-    # 12021212121212121212021212121212121212121203
+    """Decode a pulse sequence.
 
+    Args:
+        pulses: Pulse sequence as a string of pulse-length indexes, for
+            example ``"100101010110011010101001101001010101100110010110011010100110011002"``.
+
+    Returns:
+        Dict with ``id``, ``unit`` and ``state``,
+        or None if the pulses don't match the protocol.
+    """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
@@ -37,16 +42,14 @@ def decode(pulses):
         return None
 
     # Binary is now something like:
-    # 1011111111011111111110
+    # 01111010000100111101011010001010
 
     # Now we extract the data from that string.
-    # | 1011111111|011111111|   1   |10
-    # | ID?       |unit?    | State |Channel
+    # | 011 |    1 |     1 |              0 | 1000010011110101 | 1010001010 |
+    # | ?   | Unit | State | inverted state | ID               | ?          |
+    # For unit 0 the state and inverted state bits are swapped.
     unit = int(binary[3], 2)
-    if unit == 1:
-        state = binary[4] == "1"
-    else:
-        state = binary[5] == "1"
+    state = binary[4] == "1" if unit == 1 else binary[5] == "1"
     decoded = {"id": int(binary[6:22], 2), "unit": unit, "state": state}
     logger.debug(decoded)
     return decoded
@@ -54,15 +57,28 @@ def decode(pulses):
 
 # Looks like encode had never worked in the original implementation
 def encode(id: int, unit: int, state: bool, all: bool = False):
+    """Encode a message into a pulse sequence.
+
+    Unverified: encoding never worked in the original implementation.
+
+    Args:
+        id: Device ID.
+        unit: Unit code.
+        state: True for on, False for off.
+        all: Ignored by this protocol.
+
+    Returns:
+        Pulse sequence string.
+    """
     encoded = "100101"
     encoded += binary2pulses(f"{unit:1b}", binary2pulses_mapping)
 
-    state = binary2pulses(f"{state:1b}", binary2pulses_mapping)
-    inv_state = binary2pulses(f"{not state:1b}", binary2pulses_mapping)
+    state_str = binary2pulses(f"{state:1b}", binary2pulses_mapping)
+    inv_state = binary2pulses(f"{not state_str:1b}", binary2pulses_mapping)
     if unit == 1:
-        encoded += f"{state}{inv_state}"
+        encoded += f"{state_str}{inv_state}"
     else:
-        encoded += f"{inv_state}{state}"
+        encoded += f"{inv_state}{state_str}"
 
     encoded += binary2pulses(f"{id:016b}", binary2pulses_mapping)
     encoded += "01100110101001100110"

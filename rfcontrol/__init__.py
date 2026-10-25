@@ -1,8 +1,11 @@
-# pylint: disable=missing-module-docstring
+"""Python port of the pimatic rfcontroljs RF pulse decoder and encoder.
 
-try:
-    from ._version import __version__
-except ModuleNotFoundError:
-    pass
+The controller logic is fully ported, only part of the protocols are.
+"""
 
-from . import controller, helpers
+import contextlib
+
+with contextlib.suppress(ModuleNotFoundError):
+    from ._version import __version__ as __version__
+
+from . import controller as controller, helpers as helpers
