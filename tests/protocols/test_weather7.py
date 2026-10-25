@@ -17,3 +17,18 @@ def test_decode_1() -> None:
         "humidity": 59,
         "lowBattery": False,
     }
+
+
+def test_decode_negative_temperature() -> None:
+    # Synthetic: the first test's capture with the temperature set to -3.0,
+    # checked against the original implementation.
+    decoded = weather7.decode(
+        "010202010201010202010101020202020202020101010201020202010202010103"
+    )
+    assert decoded == {
+        "id": 105,
+        "unit": 0,
+        "temperature": -3.0,
+        "humidity": 59,
+        "lowBattery": False,
+    }

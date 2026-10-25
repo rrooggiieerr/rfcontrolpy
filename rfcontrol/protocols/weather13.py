@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-from rfcontrol.helpers import pulses2binary
+from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
 
 logger = logging.getLogger(__name__)
@@ -41,24 +41,6 @@ def decode(pulses: str) -> dict[str, Any] | None:
         ``lowBattery``, or None if the pulses don't match the protocol or
         can't be decoded.
     """
-
-    def binary_to_signed_number(bit_string: str, start: int, end: int) -> int:
-        """Convert binary substring [start:end] to signed integer.
-
-        Assumes MSB is the sign bit.
-        """
-        bit_segment = bit_string[start : end + 1]
-        sign_bit = int(bit_segment[0])
-        value_bits = bit_segment[1:]
-        value = int(value_bits, 2)
-
-        if sign_bit == 1:
-            # Two's complement correction
-            bit_length = len(value_bits)
-            value -= 1 << bit_length
-
-        return value
-
     # We first map the pulse sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
     if binary is None:
@@ -84,7 +66,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
         device_id = int(binary[ID_START : ID_END + 1], 2)
         low_battery = binary[LOW_BATTERY_BIT] == "1"
         unit = int(binary[UNIT_START : UNIT_END + 1], 2) + 1
-        temperature = binary_to_signed_number(binary, TEMP_START, TEMP_END) / 10
+        temperature = binary2signed(binary[TEMP_START : TEMP_END + 1]) / 10
         humidity = int(binary[HUMIDITY_START : HUMIDITY_END + 1], 2)
 
         decoded = {

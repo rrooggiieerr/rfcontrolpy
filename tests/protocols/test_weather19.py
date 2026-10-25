@@ -32,3 +32,12 @@ def test_decode_4() -> None:
         "020102020102010101010101010101020202010102020101020102010101010203"
     )
     assert decoded == {"id": 45, "unit": 1, "temperature": 46.0}
+
+
+def test_decode_negative_temperature() -> None:
+    # Synthetic: the fourth test's capture with the temperature set to -5.5,
+    # checked against the original implementation.
+    decoded = weather19.decode(
+        "020102020102010102020202020202020202010102010102020102010101010203"
+    )
+    assert decoded == {"id": 45, "unit": 1, "temperature": -5.5}

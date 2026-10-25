@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-from rfcontrol.helpers import pulses2binary
+from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
 
 logger = logging.getLogger(__name__)
@@ -50,11 +50,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # U: Unit (2 bits + 1, 00=1, 01=2, 10=3)
     # T: Temperature Value, 16-bit signed Int (divide decimal by 10)
     # x: Unused
-    sign = -1 if binary[8] == "1" else 1
     decoded = {
         "id": int(binary[:6], 2),
         "unit": int(binary[6:8], 2) + 1,
-        "temperature": sign * int(binary[9:24], 2) / 10,
+        "temperature": binary2signed(binary[8:24]) / 10,
     }
     logger.debug(decoded)
     return decoded

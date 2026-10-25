@@ -11,7 +11,7 @@ wind or rain data.
 import logging
 from typing import Any
 
-from rfcontrol.helpers import pulses2binary
+from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
 
 logger = logging.getLogger(__name__)
@@ -74,11 +74,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
 
     if states in (0, 1, 2):
         # temperature (bits 12..23) LSB-first, signed two's complement
-        temp_raw = int(binary[12:24][::-1], 2)
-        n = 12  # number of bits
-        if temp_raw >= (1 << (n - 1)):
-            temp_raw -= 1 << n
-        temperature = temp_raw / 10.0
+        temperature = binary2signed(binary[12:24][::-1]) / 10.0
 
         h0 = int(binary[28:32][::-1], 2)
         h1 = int(binary[24:28][::-1], 2)

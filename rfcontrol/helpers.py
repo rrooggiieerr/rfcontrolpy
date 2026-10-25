@@ -43,3 +43,11 @@ def hex_checksum(data: str) -> bool:
         checksum ^= number & 0x0F
         number >>= 4
     return checksum == 0
+
+
+def binary2signed(binary: str) -> int:
+    """Convert a binary value, MSB first, to a signed (two's complement) number."""
+    number = int(binary, 2)
+    if binary[0] == "1":
+        number -= 1 << len(binary)
+    return number
