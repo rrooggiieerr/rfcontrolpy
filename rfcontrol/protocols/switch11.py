@@ -45,9 +45,10 @@ def decode(pulses):
     # 01111010000100111101011010001010
 
     # Now we extract the data from that string.
-    # | 011 |    1 |     1 |              0 | 1000010011110101 | 1010001010 |
-    # | ?   | Unit | State | inverted state | ID               | ?          |
-    # For unit 0 the state and inverted state bits are swapped.
+    # | 011 |    1 | 1  | 0  | 1000010011110101 | 1010001010 |
+    # | ?   | Unit | S4 | S5 | ID               | ?          |
+    # Unit 1: S4 is the state, S5 is always 0.
+    # Unit 0: S5 is the state, S4 is the inverted state.
     unit = int(binary[3], 2)
     state = binary[4] == "1" if unit == 1 else binary[5] == "1"
     decoded = {"id": int(binary[6:22], 2), "unit": unit, "state": state}
@@ -55,11 +56,8 @@ def decode(pulses):
     return decoded
 
 
-# Looks like encode had never worked in the original implementation
 def encode(id: int, unit: int, state: bool, all: bool = False):
     """Encode a message into a pulse sequence.
-
-    Unverified: encoding never worked in the original implementation.
 
     Args:
         id: Device ID.
@@ -74,11 +72,12 @@ def encode(id: int, unit: int, state: bool, all: bool = False):
     encoded += binary2pulses(f"{unit:1b}", binary2pulses_mapping)
 
     state_str = binary2pulses(f"{state:1b}", binary2pulses_mapping)
-    inv_state = binary2pulses(f"{not state_str:1b}", binary2pulses_mapping)
+    inv_state_str = binary2pulses(f"{not state:1b}", binary2pulses_mapping)
+    # Bits 4 and 5, see the layout in decode().
     if unit == 1:
-        encoded += f"{state_str}{inv_state}"
+        encoded += state_str + binary2pulses("0", binary2pulses_mapping)
     else:
-        encoded += f"{inv_state}{state_str}"
+        encoded += inv_state_str + state_str
 
     encoded += binary2pulses(f"{id:016b}", binary2pulses_mapping)
     encoded += "01100110101001100110"

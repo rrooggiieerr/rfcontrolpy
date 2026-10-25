@@ -55,7 +55,8 @@ def test_encode_3() -> None:
     )
 
 
-# This test fails and can never work with the current switch11 encode implementation
-# def test_encode_4() -> None:
-#     encoded = switch11.encode(id=34037, unit=0, state=False)
-#     assert encoded == "100101100110011010101001101001010101100110010110011010100110011002"
+def test_encode_4() -> None:
+    encoded = switch11.encode(id=34037, unit=0, state=False)
+    assert (
+        encoded == "100101100110011010101001101001010101100110010110011010100110011002"
+    )
