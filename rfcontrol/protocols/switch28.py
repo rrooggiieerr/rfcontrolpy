@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 name = "switch28"
 type = RFControlProtocolTypes.SWITCH
 brands = ["oh!haus & Co."]
-commands = ["on", "off", "both"]
 pulse_lengths = [417, 1287, 13042]
 pulse_count = 50
 
@@ -30,21 +29,23 @@ def decode(pulses: str) -> dict[str, Any] | None:
             example ``"01010110010101100101011001100110011001010101101002"``.
 
     Returns:
-        Dict with ``id``, ``unit`` and ``command``; ``command`` is None for an unknown
-        command code,
+        Dict with ``id``, ``unit``, ``state`` and ``all``; the ``both`` command
+        decodes as ``all`` with ``state`` None, an unknown command code as
+        ``state`` None,
         or None if the pulses don't match the protocol.
     """
     # Now we extract the data from the pulses.
     # | 0101011001010110010101100 | 110011001100101 | 01011010 | 02     |
     # | ID                        | Unit            | Command  | footer |
-    command_code = pulses[40:48]
+    command = next(
+        (c for c, code in _command_codes.items() if code == pulses[40:48]), None
+    )
     try:
         decoded = {
             "id": int(pulses[0:25], 2),
             "unit": int(pulses[25:40], 2),
-            "command": next(
-                (c for c, code in _command_codes.items() if code == command_code), None
-            ),
+            "state": {"on": True, "off": False}.get(command or ""),
+            "all": command == "both",
         }
     except ValueError:
         return None
@@ -52,17 +53,19 @@ def decode(pulses: str) -> dict[str, Any] | None:
     return decoded
 
 
-def encode(id: int, unit: int, command: str) -> str:
+def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     """Encode a message into a pulse sequence.
 
     Args:
         id: Device ID.
         unit: Unit code.
-        command: ``on``, ``off`` or ``both``.
+        state: True for on, False for off; ignored when ``all`` is True.
+        all: Send the ``both`` command.
 
     Returns:
         Pulse sequence string.
     """
+    command = "both" if all else ("on" if state else "off")
     encoded = f"{id:025b}{unit:015b}{_command_codes[command]}02"
     logger.debug(encoded)
     return encoded

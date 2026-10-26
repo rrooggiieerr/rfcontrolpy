@@ -697,13 +697,13 @@ Shutter motors.
 **Decoded values**:
 
 - `id`
-- `unit`
+- `channel`
 - `command`
 
 **Encode parameters**:
 
 - `id`: Device ID.
-- `unit`: Unit (channel) code.
+- `channel`: Channel.
 - `command`: ``up``, ``down``, ``stop`` or ``program``.
 
 ## shutter4
@@ -718,7 +718,7 @@ Shutter motors.
 **Decoded values**:
 
 - `id`
-- `unit`
+- `channel`
 - `all`
 - `command`
 
@@ -726,8 +726,8 @@ Shutter motors.
 
 - `id`: Device ID.
 - `command`: ``up``, ``down`` or ``stop``.
-- `unit` (default `0`): Unit (channel) code, ignored when ``all`` is True.
-- `all` (default `False`): Address all units.
+- `channel` (default `0`): Channel, ignored when ``all`` is True.
+- `all` (default `False`): Address all channels.
 
 ## shutter5
 
@@ -1842,6 +1842,7 @@ Temperature or humidity sensor.
 **Decoded values**:
 
 - `id`
+- `channel`
 - `temperature`
 - `humidity`
 

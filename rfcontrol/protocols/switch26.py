@@ -2,8 +2,8 @@
 
 Brands: Chacon EMW200TC.
 
-Channel and unit are strings. Unknown codes are returned as their raw bits,
-and raw bits can also be sent.
+The id is the channel letter. An unknown channel code is returned as its raw
+bits, and raw bits can also be sent; an unknown unit code is returned as None.
 """
 
 import logging
@@ -50,7 +50,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
             example ``"01010110011001100110011001010110011001100110101002"``.
 
     Returns:
-        Dict with ``channel``, ``unit`` and ``state``,
+        Dict with ``id`` (the channel letter), ``unit`` and ``state``,
         or None if the pulses don't match the protocol.
     """
     # We first map the sequences to binary.
@@ -65,36 +65,33 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # A command of 2 means on.
     channel_code = binary[0:3]
     unit_code = binary[3:7]
+    unit = next((u for u, code in _unit_codes.items() if code == unit_code), None)
     decoded = {
-        "channel": next(
+        "id": next(
             (c for c, code in _channel_codes.items() if code == channel_code),
             channel_code,
         ),
-        "unit": next(
-            (u for u, code in _unit_codes.items() if code == unit_code),
-            unit_code + binary[7:11],
-        ),
+        "unit": None if unit is None else int(unit),
         "state": binary[11] == "2",
     }
     logger.debug(decoded)
     return decoded
 
 
-def encode(channel: str, unit: str, state: bool) -> str:
+def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
     """Encode a message into a pulse sequence.
 
     Args:
-        channel: Channel letter, or raw channel bits.
-        unit: Unit as a string, or raw unit and constant bits.
+        id: Channel letter, or raw channel bits.
+        unit: Unit code.
         state: True for on, False for off.
+        all: Ignored by this protocol.
 
     Returns:
         Pulse sequence string.
     """
-    encoded = binary2pulses(_channel_codes.get(channel, channel), binary2pulses_mapping)
-    encoded += binary2pulses(
-        _unit_and_constant_codes.get(unit, unit), binary2pulses_mapping
-    )
+    encoded = binary2pulses(_channel_codes.get(id, id), binary2pulses_mapping)
+    encoded += binary2pulses(_unit_and_constant_codes[str(unit)], binary2pulses_mapping)
     encoded += binary2pulses("2" if state else "0", binary2pulses_mapping)
     encoded += "02"
     logger.debug(encoded)
