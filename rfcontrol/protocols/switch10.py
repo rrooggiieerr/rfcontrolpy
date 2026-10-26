@@ -3,13 +3,10 @@
 Brands: Easy Home Advanced.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -44,9 +41,8 @@ def decode(pulses: str) -> dict[str, Any] | None:
     """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
-    logger.debug(binary)
 
-    if binary is None:
+    if binary is None or len(binary) < 57:
         return None
 
     # Binary is now something like:
@@ -64,14 +60,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     elif groupcode1 == 12 and groupcode2 == 3:
         group_res = True
 
-    decoded = {
+    return {
         "id": int(binary[11:43], 2),
         "unit": int(binary[51:57], 2),
         "all": group_res,
         "state": binary[47] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -103,5 +97,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += groupcode2
     encoded += binary2pulses(f"{unit:06b}", binary2pulses_mapping)
     encoded += "02"
-    logger.debug(encoded)
     return encoded

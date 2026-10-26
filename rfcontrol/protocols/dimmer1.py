@@ -50,7 +50,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
-    if binary is None:
+    if binary is None or len(binary) < 36:
+        return None
+
+    # Only the state (bit 27) can be "N", meaning "don't change the state".
+    if "N" in binary[:27] + binary[28:]:
         return None
 
     # Binary is now something like:

@@ -39,7 +39,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
-    if binary is None:
+    if binary is None or len(binary) < 22:
         return None
 
     # Binary is now something like:

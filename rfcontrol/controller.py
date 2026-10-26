@@ -185,7 +185,11 @@ def _decode_pulses(
     results: list[dict[str, Any]] = []
     for protocol in protocols:
         if does_protocol_match(pulse_lengths, pulse_sequence, protocol):
-            decoded = protocol.decode(pulse_sequence)
+            try:
+                decoded = protocol.decode(pulse_sequence)
+            except IndexError, KeyError, ValueError:
+                logger.debug("Protocol %s failed to decode the pulses", protocol.name)
+                continue
             if decoded is not None:
                 logger.debug("Protocol %s matches", protocol.name)
                 logger.debug("Decoded reception: %s", decoded)
