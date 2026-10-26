@@ -176,6 +176,10 @@ def decode_pulses(
     # Filter out 0 length pulses
     pulse_lengths = [i for i in pulse_lengths if i > 0]
 
+    if not set(pulse_sequence) <= {str(i) for i in range(len(pulse_lengths))}:
+        logger.debug("Pulse sequence refers to unknown pulse lengths")
+        return []
+
     pulse_lengths, pulse_sequence = sort_compressed_pulses(
         pulse_lengths, pulse_sequence
     )

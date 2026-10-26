@@ -3992,6 +3992,23 @@ def test_decode_pulses_fixable() -> None:
     assert len(results) >= 1, "Fixable pulses should be fixed."
 
 
+def test_decode_pulses_unknown_pulse_length() -> None:
+    # Index 3 refers to a fourth pulse length that doesn't exist.
+    results = controller.decode_pulses([300, 900, 9000], "01010123")
+    assert results == []
+
+
+def test_decode_pulses_invalid_character() -> None:
+    results = controller.decode_pulses([300, 900, 9000], "0101x2")
+    assert results == []
+
+
+def test_decode_pulses_zero_pulse_length_not_at_end() -> None:
+    # Filtering the 0 leaves 2 pulse lengths, so index 2 no longer exists.
+    results = controller.decode_pulses([300, 0, 900], "0202")
+    assert results == []
+
+
 def test_compress_timings_1() -> None:
     # Should compress the timings.
     result = controller.compress_timings(
