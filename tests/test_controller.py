@@ -2556,7 +2556,7 @@ def test_decode_pulses_switch26_1() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch26"
-    assert results[0]["values"] == {"channel": "A", "unit": "3", "state": True}
+    assert results[0]["values"] == {"id": "A", "unit": 3, "state": True}
 
 
 def test_decode_pulses_switch26_2() -> None:
@@ -2569,7 +2569,7 @@ def test_decode_pulses_switch26_2() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch26"
-    assert results[0]["values"] == {"channel": "A", "unit": "4", "state": True}
+    assert results[0]["values"] == {"id": "A", "unit": 4, "state": True}
 
 
 def test_decode_pulses_switch26_3() -> None:
@@ -2582,7 +2582,7 @@ def test_decode_pulses_switch26_3() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch26"
-    assert results[0]["values"] == {"channel": "A", "unit": "4", "state": False}
+    assert results[0]["values"] == {"id": "A", "unit": 4, "state": False}
 
 
 def test_decode_pulses_switch27_1() -> None:
@@ -2595,7 +2595,7 @@ def test_decode_pulses_switch27_1() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch27"
-    assert results[0]["values"] == {"channel": "A", "unit": "1", "state": True}
+    assert results[0]["values"] == {"id": "A", "unit": 1, "state": True}
 
 
 def test_decode_pulses_switch27_2() -> None:
@@ -2608,7 +2608,7 @@ def test_decode_pulses_switch27_2() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch27"
-    assert results[0]["values"] == {"channel": "C", "unit": "1", "state": True}
+    assert results[0]["values"] == {"id": "C", "unit": 1, "state": True}
 
 
 def test_decode_pulses_switch27_3() -> None:
@@ -2621,7 +2621,7 @@ def test_decode_pulses_switch27_3() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch27"
-    assert results[0]["values"] == {"channel": "D", "unit": "1", "state": True}
+    assert results[0]["values"] == {"id": "D", "unit": 1, "state": True}
 
 
 def test_decode_pulses_switch28_1() -> None:
@@ -2634,7 +2634,12 @@ def test_decode_pulses_switch28_1() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch28"
-    assert results[0]["values"] == {"id": 11316396, "unit": 26213, "command": "on"}
+    assert results[0]["values"] == {
+        "id": 11316396,
+        "unit": 26213,
+        "state": True,
+        "all": False,
+    }
 
 
 def test_decode_pulses_switch28_2() -> None:
@@ -2647,7 +2652,12 @@ def test_decode_pulses_switch28_2() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch28"
-    assert results[0]["values"] == {"id": 11316396, "unit": 26213, "command": "on"}
+    assert results[0]["values"] == {
+        "id": 11316396,
+        "unit": 26213,
+        "state": True,
+        "all": False,
+    }
 
 
 def test_decode_pulses_switch28_3() -> None:
@@ -2660,7 +2670,12 @@ def test_decode_pulses_switch28_3() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch28"
-    assert results[0]["values"] == {"id": 11316396, "unit": 26213, "command": "off"}
+    assert results[0]["values"] == {
+        "id": 11316396,
+        "unit": 26213,
+        "state": False,
+        "all": False,
+    }
 
 
 def test_decode_pulses_switch28_4() -> None:
@@ -2673,7 +2688,12 @@ def test_decode_pulses_switch28_4() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch28"
-    assert results[0]["values"] == {"id": 11316396, "unit": 26213, "command": "off"}
+    assert results[0]["values"] == {
+        "id": 11316396,
+        "unit": 26213,
+        "state": False,
+        "all": False,
+    }
 
 
 def test_decode_pulses_switch28_5() -> None:
@@ -2686,7 +2706,12 @@ def test_decode_pulses_switch28_5() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch28"
-    assert results[0]["values"] == {"id": 11316396, "unit": 26213, "command": "both"}
+    assert results[0]["values"] == {
+        "id": 11316396,
+        "unit": 26213,
+        "state": None,
+        "all": True,
+    }
 
 
 def test_decode_pulses_switch28_6() -> None:
@@ -2699,7 +2724,12 @@ def test_decode_pulses_switch28_6() -> None:
 
     assert len(results) == 1
     assert results[0]["protocol"] == "switch28"
-    assert results[0]["values"] == {"id": 11316396, "unit": 26213, "command": "both"}
+    assert results[0]["values"] == {
+        "id": 11316396,
+        "unit": 26213,
+        "state": None,
+        "all": True,
+    }
 
 
 def test_decode_pulses_switch29_1() -> None:
@@ -3990,6 +4020,23 @@ def test_decode_pulses_fixable() -> None:
         "030002000202000200000202000002020000020002020000020002020000020201020000020200020000020201020002000200000200020002000200020002000204",
     )
     assert len(results) >= 1, "Fixable pulses should be fixed."
+
+
+def test_decode_pulses_unknown_pulse_length() -> None:
+    # Index 3 refers to a fourth pulse length that doesn't exist.
+    results = controller.decode_pulses([300, 900, 9000], "01010123")
+    assert results == []
+
+
+def test_decode_pulses_invalid_character() -> None:
+    results = controller.decode_pulses([300, 900, 9000], "0101x2")
+    assert results == []
+
+
+def test_decode_pulses_zero_pulse_length_not_at_end() -> None:
+    # Filtering the 0 leaves 2 pulse lengths, so index 2 no longer exists.
+    results = controller.decode_pulses([300, 0, 900], "0202")
+    assert results == []
 
 
 def test_compress_timings_1() -> None:
