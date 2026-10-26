@@ -1,6 +1,4 @@
-"""RF protocols, a partial port of the CoffeeScript/Node.js rfcontroljs implementation.
-
-Not all protocols of the original implementation have been ported yet.
+"""RF protocols, ported from the CoffeeScript/Node.js rfcontroljs implementation.
 
 https://github.com/pimatic/rfcontroljs/tree/master/src/protocols
 """

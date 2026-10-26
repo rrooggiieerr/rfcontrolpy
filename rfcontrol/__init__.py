@@ -1,6 +1,6 @@
 """Python port of the pimatic rfcontroljs RF pulse decoder and encoder.
 
-The controller logic is fully ported, only part of the protocols are.
+The controller logic and all protocols are ported.
 """
 
 import contextlib
