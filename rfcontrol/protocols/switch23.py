@@ -3,13 +3,10 @@
 Brands: Atag Cooking hood, TXS4 Transmitter.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -58,14 +55,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 14 bits | 4 bits  |
     # | ID      | Command |
     command_code = binary[14:18]
-    decoded = {
+    return {
         "id": int(binary[0:14], 2),
         "command": next(
             (c for c, code in _command_codes.items() if code == command_code), None
         ),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, command: str) -> str:
@@ -83,5 +78,4 @@ def encode(id: int, command: str) -> str:
     encoded += binary2pulses(f"{id:014b}", binary2pulses_mapping)
     encoded += binary2pulses(command_code, binary2pulses_mapping)
     encoded += "2"
-    logger.debug(encoded)
     return encoded

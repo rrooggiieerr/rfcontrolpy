@@ -1,12 +1,9 @@
 """Switch11 protocol: McPower switches."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -52,9 +49,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Unit 0: S5 is the state, S4 is the inverted state.
     unit = int(binary[3], 2)
     state = binary[4] == "1" if unit == 1 else binary[5] == "1"
-    decoded = {"id": int(binary[6:22], 2), "unit": unit, "state": state}
-    logger.debug(decoded)
-    return decoded
+    return {"id": int(binary[6:22], 2), "unit": unit, "state": state}
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -83,5 +78,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses(f"{id:016b}", binary2pulses_mapping)
     encoded += "01100110101001100110"
     encoded += "02"
-    logger.debug(encoded)
     return encoded

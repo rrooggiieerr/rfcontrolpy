@@ -1,12 +1,9 @@
 """Skeleton protocol to copy when implementing a new protocol."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping: list[list[str]] = []
@@ -41,9 +38,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     #
 
     # Now we extract the data from that string.
-    decoded: dict[str, Any] = {}
-    logger.debug(decoded)
-    return decoded
+    return {}
 
 
 def encode(id: int, unit: int) -> str:
@@ -56,6 +51,4 @@ def encode(id: int, unit: int) -> str:
     Returns:
         Pulse sequence string.
     """
-    encoded = ""
-    logger.debug(encoded)
-    return encoded
+    return ""

@@ -3,13 +3,10 @@
 Brands: DRU Heaters.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -48,13 +45,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 12 bits | 8 bits | 1 bit | 1 bit |
     # | ID      | Unit   | State | ?     |
-    decoded = {
+    return {
         "id": int(binary[0:12], 2),
         "unit": int(binary[12:20], 2),
         "state": binary[20] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -73,5 +68,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses(f"{unit:08b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     encoded += "1012"
-    logger.debug(encoded)
     return encoded

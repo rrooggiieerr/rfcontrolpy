@@ -6,13 +6,10 @@ The id is the channel letter. An unknown channel code is returned as its raw
 bits, and raw bits can also be sent; an unknown unit code is returned as None.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -66,7 +63,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     channel_code = binary[0:3]
     unit_code = binary[3:7]
     unit = next((u for u, code in _unit_codes.items() if code == unit_code), None)
-    decoded = {
+    return {
         "id": next(
             (c for c, code in _channel_codes.items() if code == channel_code),
             channel_code,
@@ -74,8 +71,6 @@ def decode(pulses: str) -> dict[str, Any] | None:
         "unit": None if unit is None else int(unit),
         "state": binary[11] == "2",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
@@ -94,5 +89,4 @@ def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses(_unit_and_constant_codes[str(unit)], binary2pulses_mapping)
     encoded += binary2pulses("2" if state else "0", binary2pulses_mapping)
     encoded += "02"
-    logger.debug(encoded)
     return encoded

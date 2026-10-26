@@ -5,13 +5,10 @@ Brands: Rising Sun RSL366, Conrad RSL366, PROmax.
 The system code and program code are a position from 1 to 4, 0 means none.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -68,13 +65,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 1000        | 1000         | 000 | 0              |
     # | System code | Program code | -   | inverted state |
-    decoded = {
+    return {
         "id": _bits_to_position(binary[0:4]),
         "unit": _bits_to_position(binary[4:8]),
         "state": binary[11] != "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -94,5 +89,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += "011001100110"
     encoded += binary2pulses_mapping["0"] if state else binary2pulses_mapping["1"]
     encoded += "02"
-    logger.debug(encoded)
     return encoded

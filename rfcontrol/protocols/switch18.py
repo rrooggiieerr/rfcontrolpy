@@ -3,13 +3,10 @@
 Brands: Otio, Advisen.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -52,12 +49,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 01 | 01    | 1100001011000111101111110 |
     # | 01 | State | ID                        |
-    decoded = {
+    return {
         "id": int(binary[4:32], 2),
         "state": binary[2] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, state: bool, unit: int = 0, all: bool = False) -> str:
@@ -76,5 +71,4 @@ def encode(id: int, state: bool, unit: int = 0, all: bool = False) -> str:
     encoded += "1001" if state else "0110"
     encoded += binary2pulses(f"{id:028b}", binary2pulses_mapping)
     encoded += "03"
-    logger.debug(encoded)
     return encoded

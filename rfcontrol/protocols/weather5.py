@@ -8,13 +8,10 @@ Depending on the state bits a message carries temperature and humidity,
 wind or rain data.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -80,14 +77,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
         h1 = int(binary[24:28][::-1], 2)
         humidity = h0 * 10 + h1
 
-        decoded = {
+        return {
             "id": id_,
             "lowBattery": low_battery,
             "temperature": temperature,
             "humidity": humidity,
         }
-        logger.debug(decoded)
-        return decoded
 
     if states == 3:
         # substate (bits 12..14) LSB-first
@@ -95,39 +90,31 @@ def decode(pulses: str) -> dict[str, Any] | None:
 
         if substate == 1:
             avg_airspeed = int(binary[24:32][::-1], 2) / 5.0
-            decoded = {
+            return {
                 "id": id_,
                 "lowBattery": low_battery,
                 "avgAirspeed": avg_airspeed,
             }
-            logger.debug(decoded)
-            return decoded
 
         if substate == 7:
             wind_direction = int(binary[15:24][::-1], 2)
             wind_gust = int(binary[24:32][::-1], 2) / 5.0
-            decoded = {
+            return {
                 "id": id_,
                 "lowBattery": low_battery,
                 "windDirection": wind_direction,
                 "windGust": wind_gust,
             }
-            logger.debug(decoded)
-            return decoded
 
         if substate == 3:
             rain = int(binary[16:32][::-1], 2) / 4.0
-            decoded = {
+            return {
                 "id": id_,
                 "lowBattery": low_battery,
                 "rain": rain,
             }
-            logger.debug(decoded)
-            return decoded
 
-    decoded = {
+    return {
         "id": id_,
         "lowBattery": low_battery,
     }
-    logger.debug(decoded)
-    return decoded

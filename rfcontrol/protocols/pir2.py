@@ -3,13 +3,10 @@
 Brands: Multi Kon Trade B00RTDMC4S.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -51,10 +48,8 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 10101 | 10101 | 11001111110011 |
     # |  Unit |    ID | fixed          |
-    decoded = {
+    return {
         "unit": int(binary[0:5], 2),
         "id": int(binary[5:10], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded

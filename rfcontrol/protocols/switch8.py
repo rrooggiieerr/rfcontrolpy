@@ -3,13 +3,10 @@
 Brands: Rev.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -76,13 +73,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Building the unit code to something like this 'E10'
     unit += str(int(binary[5:10], 2))
 
-    decoded = {
+    return {
         "id": int(binary[:5], 2),
         "unit": unit,
         "state": state,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: str, state: bool, all: bool = False) -> str:
@@ -110,5 +105,4 @@ def encode(id: int, unit: str, state: bool, all: bool = False) -> str:
     encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["2"]
     encoded += binary2pulses_mapping["2"] if state else binary2pulses_mapping["1"]
     encoded += "02"
-    logger.debug(encoded)
     return encoded

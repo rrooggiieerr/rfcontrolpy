@@ -5,13 +5,10 @@ Brands: Romotec.
 Commands: ``up``, ``down``, ``stop`` and ``program``.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -69,13 +66,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     command = next(
         (c for c, code in _command_codes.items() if code[:3] == command_code), None
     )
-    decoded = {
+    return {
         "id": int(binary[0:28], 2),
         "unit": int(binary[28:32], 2),
         "command": command,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, command: str) -> str:
@@ -96,5 +91,4 @@ def encode(id: int, unit: int, command: str) -> str:
         encoded = f"32{id_pulses}{unit_pulses}01{command_pulses}14"
     else:
         encoded = f"32{id_pulses}{unit_pulses}10{command_pulses}04"
-    logger.debug(encoded)
     return encoded

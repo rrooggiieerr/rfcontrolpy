@@ -3,13 +3,10 @@
 Brands: Brennenstuhl Comfort, Elro Home Control.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -51,13 +48,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # |     11001 |    10000 |              1 |    0 |
     # | HouseCode | UnitCode | inverted State | State|
-    decoded = {
+    return {
         "id": int(binary[0:5], 2),
         "unit": int(binary[5:10], 2),
         "state": binary[11] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -77,5 +72,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses_mapping["0"] if state else binary2pulses_mapping["1"]
     encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     encoded += "02"
-    logger.debug(encoded)
     return encoded

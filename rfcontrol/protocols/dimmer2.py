@@ -114,14 +114,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
         logger.debug("Unknown nibble code")
         return None
 
-    decoded = {
+    return {
         "id": remote_code,
         "unit": unit_code,
         "state": state,
         "dimlevel": dimlevel,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(

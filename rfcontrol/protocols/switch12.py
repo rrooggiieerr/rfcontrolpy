@@ -3,13 +3,10 @@
 Brands: Europe RS-200.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -53,13 +50,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 10011011111111 | 0 | 1 | 01 | 1 | 0 | 11 | 1 | 0 | 0 |
     # | ID             | S | 1 | U  | 1 | S | 11 | s | S |   |
     # S: State, s: inverted state, U: 4 - unit
-    decoded = {
+    return {
         "id": int(binary[0:14], 2),
         "unit": 4 - int(binary[16:18], 2),
         "state": binary[19] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -84,5 +79,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
         binary = f"{id_bits}{s}1{unit_bits}1{s}11{s_inv}{s}0"
     encoded = binary2pulses(binary, binary2pulses_mapping)
     encoded += "13" if unit == 2 else "03"
-    logger.debug(encoded)
     return encoded

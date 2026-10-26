@@ -3,13 +3,10 @@
 Brands: FA21RF.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -52,12 +49,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 100010111000000100001000 |
     # | ID                       |
-    decoded = {
+    return {
         "id": int(binary[0:24], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, state: bool = True) -> str:
@@ -76,6 +71,4 @@ def encode(id: int, state: bool = True) -> str:
     if state is False:
         return "0"
     unit = binary2pulses(f"{id:024b}", binary2pulses_mapping)
-    encoded = f"30{unit}04" * 3
-    logger.debug(encoded)
-    return encoded
+    return f"30{unit}04" * 3

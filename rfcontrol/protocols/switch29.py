@@ -5,13 +5,10 @@ Brands: Meiantech, Atlantic, Aidebao, PB-403R.
 Commands: ``arm``, ``panic``, ``disarm``, ``home``, ``grp1``, ``grp2``, ``grp3``.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding. The pulses are the bits.
 pulses2binary_mapping = [
@@ -60,7 +57,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 25 bits | 24 bits | 24 bits |
     # | ID      | Unit    | Command |
     command_code = pulses[49:73]
-    decoded = {
+    return {
         "id": int(binary[0:25], 2),
         "unit": int(binary[25:49], 2),
         "command": next(
@@ -68,8 +65,6 @@ def decode(pulses: str) -> dict[str, Any] | None:
             int(binary[49:73], 2),
         ),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, command: str) -> str:
@@ -83,6 +78,4 @@ def encode(id: int, unit: int, command: str) -> str:
     Returns:
         Pulse sequence string.
     """
-    encoded = f"{id:025b}{unit:024b}{_command_codes[command]}2"
-    logger.debug(encoded)
-    return encoded
+    return f"{id:025b}{unit:024b}{_command_codes[command]}2"

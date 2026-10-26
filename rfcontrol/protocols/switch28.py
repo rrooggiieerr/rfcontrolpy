@@ -5,12 +5,9 @@ Brands: oh!haus & Co.
 No mapping to binary fits all codes, so the pulses themselves are read as bits.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 name = "switch28"
 type = RFControlProtocolTypes.SWITCH
@@ -49,7 +46,6 @@ def decode(pulses: str) -> dict[str, Any] | None:
         }
     except ValueError:
         return None
-    logger.debug(decoded)
     return decoded
 
 
@@ -66,6 +62,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
         Pulse sequence string.
     """
     command = "both" if all else ("on" if state else "off")
-    encoded = f"{id:025b}{unit:015b}{_command_codes[command]}02"
-    logger.debug(encoded)
-    return encoded
+    return f"{id:025b}{unit:015b}{_command_codes[command]}02"

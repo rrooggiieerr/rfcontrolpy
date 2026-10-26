@@ -224,10 +224,10 @@ def encode_pulses(protocol_name: str, message: dict[str, Any]) -> dict[str, Any]
     if getattr(protocol, "encode", None) is None:
         raise RFControlSendNotSupportedError("The protocol has no send support")
 
-    return {
-        "pulses": protocol.encode(**message),
-        "pulse_lengths": protocol.pulse_lengths,
-    }
+    pulses = protocol.encode(**message)
+    logger.debug("Protocol %s encoded %s: %s", protocol_name, message, pulses)
+
+    return {"pulses": pulses, "pulse_lengths": protocol.pulse_lengths}
 
 
 def get_all_protocols() -> list[ModuleType]:

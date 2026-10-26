@@ -5,13 +5,10 @@ Brands: awningCode.
 Commands: ``in``, ``out`` and ``stop``.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -63,12 +60,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     command = next(
         (c for c, code in _command_codes.items() if code == command_code), None
     )
-    decoded = {
+    return {
         "id": int(binary[0:31], 2),
         "command": command,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, command: str) -> str:
@@ -84,6 +79,4 @@ def encode(id: int, command: str) -> str:
     id_pulses = binary2pulses(f"{id:031b}", binary2pulses_mapping)
     command_pulses = binary2pulses(_command_codes[command], binary2pulses_mapping)
     message = f"{id_pulses}{command_pulses}{command_pulses}"
-    encoded = f"32{message}1032{message}14"
-    logger.debug(encoded)
-    return encoded
+    return f"32{message}1032{message}14"

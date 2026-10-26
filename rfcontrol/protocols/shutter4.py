@@ -5,13 +5,10 @@ Brands: ROHRMOTOR24.
 Commands: ``up``, ``down`` and ``stop``. Unit 0 addresses all units.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -67,14 +64,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 0001 0001 0010 0000 1001 1110 0010 | 0000    | 0     | 001     | 000             |
     # | ID                                 | Unit    | fixed | Command | inverse command |
     unit = int(binary[28:32], 2)
-    decoded = {
+    return {
         "id": int(binary[0:28], 2),
         "unit": unit,
         "all": unit == 0,
         "command": _decode_command_codes.get(binary[33:36]),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, command: str, unit: int = 0, all: bool = False) -> str:
@@ -101,5 +96,4 @@ def encode(id: int, command: str, unit: int = 0, all: bool = False) -> str:
     encoded += "01"
     encoded += binary2pulses(command_code, binary2pulses_mapping)
     encoded += footer
-    logger.debug(encoded)
     return encoded

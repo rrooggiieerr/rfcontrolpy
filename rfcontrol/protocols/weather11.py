@@ -1,12 +1,9 @@
 """Weather11 protocol: temperature and humidity sensor."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -52,12 +49,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # T: Temperature Value, 12-bit signed Int (divide decimal by 10)
     # H: Humidity, 8-bit unsigned Int
     # x: Unused
-    decoded = {
+    return {
         "id": int(binary[0:8], 2),
         "unit": int(binary[10:12], 2) + 1,
         "temperature": binary2signed(binary[12:24]) / 10,
         "humidity": int(binary[28:36], 2),
         "lowBattery": binary[8] != "1",
     }
-    logger.debug(decoded)
-    return decoded

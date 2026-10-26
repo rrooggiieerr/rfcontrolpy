@@ -3,13 +3,10 @@
 Brands: Everflourish.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -63,13 +60,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | ID   | Unit | don't care | State |
     # The position of the 0 in the ID gives the letter (A is first);
     # the unit is counted the same way.
-    decoded = {
+    return {
         "id": chr(64 + _count_until_zero(binary, 0, 3)),
         "unit": _count_until_zero(binary, 4, 6),
         "state": binary[11] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
@@ -92,5 +87,4 @@ def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
     encoded += "0110011001100110"
     encoded += "1010" if state else "0101"
     encoded += "02"
-    logger.debug(encoded)
     return encoded

@@ -1,12 +1,9 @@
 """Generic protocol: homemade sensors sending a typed numeric value."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -48,11 +45,9 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 00001111101000 | 1010 |        1 | 000000000000000000000000000001 |
     # | ID             | Type | Positive | Value                          |
-    decoded = {
+    return {
         "id": int(binary[:14], 2),
         "type": int(binary[14:18], 2),
         "positive": binary[18] == "1",
         "value": int(binary[19:], 2),
     }
-    logger.debug(decoded)
-    return decoded

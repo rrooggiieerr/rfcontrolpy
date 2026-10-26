@@ -63,13 +63,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     except KeyError:
         logger.debug("Unknown nibble code")
         return None
-    decoded = {
+    return {
         "id": remote_code,
         "unit": unit,
         "state": state,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -97,5 +95,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     for shift in (20, 16, 12, 8, 4, 0):
         encoded += _nibble((id >> shift) & 0x0F)
     encoded += "03"
-    logger.debug(encoded)
     return encoded

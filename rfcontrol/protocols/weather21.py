@@ -1,12 +1,9 @@
 """Weather21 protocol: temperature and humidity sensor."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -92,7 +89,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # The binary is one bit short: the last bit of the checksum is part of the
     # footer. Like the original implementation, it's read as 0.
     checksum = int(binary[32:40].ljust(8, "0"), 2)
-    decoded = {
+    return {
         "crcOk": checksum == _crc8([digest], 0x53),
         "id": int(binary[0:8], 2),
         "humidity": int(binary[8:16], 2),
@@ -100,5 +97,3 @@ def decode(pulses: str) -> dict[str, Any] | None:
         "unit": int(binary[18:20], 2) + 1,
         "temperature": binary2signed(binary[20:32]) / 10,
     }
-    logger.debug(decoded)
-    return decoded

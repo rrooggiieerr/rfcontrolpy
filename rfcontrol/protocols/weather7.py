@@ -1,12 +1,9 @@
 """Weather7 protocol: Auriol IAN 9183 temperature and humidity sensor."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -47,12 +44,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 01101001 | 1 | 0 | 00    | 000000011101 | 111011 | 00 |
     # | ID       | B | ? | Unit  | Temp.        | Humid. | ?  |
     # B: battery, 1 = OK
-    decoded = {
+    return {
         "id": int(binary[:8], 2),
         "unit": int(binary[10:12], 2),
         "temperature": binary2signed(binary[12:24]) / 10,
         "humidity": int(binary[24:30], 2),
         "lowBattery": binary[8] != "1",
     }
-    logger.debug(decoded)
-    return decoded

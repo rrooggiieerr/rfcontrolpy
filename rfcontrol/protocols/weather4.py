@@ -3,13 +3,10 @@
 The sensor sends the temperature in °F; it is converted to °C.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -68,12 +65,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     humidity = h0 * 10 + h1
     low_battery = (3 - (int(binary[12:16], 2) / 10)) < 2.5
 
-    decoded = {
+    return {
         "id": int(binary[:8], 2),
         "unit": int(binary[36:40], 2),
         "temperature": temperature,
         "humidity": humidity,
         "lowBattery": low_battery,
     }
-    logger.debug(decoded)
-    return decoded

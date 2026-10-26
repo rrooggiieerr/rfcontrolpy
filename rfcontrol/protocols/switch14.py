@@ -3,13 +3,10 @@
 Brands: UNITEC.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -52,14 +49,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 00000000000000000000 | 11 | 0            | 0     |
     # | ID                   | U  | inverted All | State |
     # U: 4 - unit, LSB first
-    decoded = {
+    return {
         "id": int(binary[0:20], 2),
         "unit": 4 - int(binary[20:22][::-1], 2),
         "all": binary[22] != "1",
         "state": binary[23] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -78,6 +73,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     binary += f"{4 - unit:02b}"[::-1]
     binary += "0" if all is True else "1"
     binary += "1" if state else "0"
-    encoded = binary2pulses(binary, binary2pulses_mapping) + "02"
-    logger.debug(encoded)
-    return encoded
+    return binary2pulses(binary, binary2pulses_mapping) + "02"

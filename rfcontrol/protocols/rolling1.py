@@ -6,13 +6,10 @@ The decoded code changes with every button press, so a switch is taught by
 recording one or more codes for on and off.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -48,9 +45,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     if binary is None:
         return None
 
-    decoded = {"code": binary}
-    logger.debug(decoded)
-    return decoded
+    return {"code": binary}
 
 
 def encode(code_on: list[str], code_off: list[str], state: bool) -> str:
@@ -65,6 +60,4 @@ def encode(code_on: list[str], code_off: list[str], state: bool) -> str:
         Pulse sequence string.
     """
     code = code_on[0] if state is True else code_off[0]
-    encoded = binary2pulses(code, binary2pulses_mapping) + "23"
-    logger.debug(encoded)
-    return encoded
+    return binary2pulses(code, binary2pulses_mapping) + "23"

@@ -3,13 +3,10 @@
 Brands: LIFETEC-MD13187.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -47,13 +44,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 12 bits | 11 bits |
     # | Unit    | ID      |
-    decoded = {
+    return {
         "unit": int(binary[0:12], 2),
         "id": int(binary[12:23], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool = True, all: bool = False) -> str:
@@ -71,5 +66,4 @@ def encode(id: int, unit: int, state: bool = True, all: bool = False) -> str:
     encoded = binary2pulses(f"{unit:012b}", binary2pulses_mapping)
     encoded += binary2pulses(f"{id:011b}", binary2pulses_mapping)
     encoded += "02"
-    logger.debug(encoded)
     return encoded

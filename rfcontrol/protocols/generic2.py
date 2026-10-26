@@ -1,12 +1,9 @@
 """Generic2 protocol: homemade sensors with battery level and checksum."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import hex_checksum, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -44,7 +41,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # 11011110111110000011111101111111
 
     # Now we extract the data from that string.
-    decoded = {
+    return {
         "id": int(binary[24:32][::-1], 2),
         "type": int(binary[20:24][::-1], 2),
         "value": int(binary[10:20][::-1], 2),
@@ -52,5 +49,3 @@ def decode(pulses: str) -> dict[str, Any] | None:
         "battery": 33 * int(binary[4:6][::-1], 2),
         "checksum": hex_checksum(binary),
     }
-    logger.debug(decoded)
-    return decoded

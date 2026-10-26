@@ -5,13 +5,10 @@ Brands: JP-05.
 Commands: ``arm``, ``dis``, ``byp``, ``sos``.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding. The pulses are the bits.
 pulses2binary_mapping = [
@@ -57,7 +54,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 16 bits | 16 bits | 16 bits |
     # | ID      | Unit    | Command |
     command_code = pulses[32:48]
-    decoded = {
+    return {
         "id": int(binary[0:16], 2),
         "unit": int(binary[16:32], 2),
         "command": next(
@@ -65,8 +62,6 @@ def decode(pulses: str) -> dict[str, Any] | None:
             None,
         ),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, command: str) -> str:
@@ -80,6 +75,4 @@ def encode(id: int, unit: int, command: str) -> str:
     Returns:
         Pulse sequence string.
     """
-    encoded = f"{id:016b}{unit:016b}{_command_codes[command]}02"
-    logger.debug(encoded)
-    return encoded
+    return f"{id:016b}{unit:016b}{_command_codes[command]}02"

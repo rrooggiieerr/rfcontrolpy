@@ -3,13 +3,10 @@
 Brands: REV Switch 008342 and Dimmer 008343.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -56,13 +53,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 5 bits | 3 bits | 8 bits | 4 bits | 4 bits |
     # | ID     | fixed  | Unit   | fixed  | State  |
-    decoded = {
+    return {
         "id": _lookup(_id_codes, binary[0:5]),
         "unit": _lookup(_unit_codes, binary[8:16]),
         "state": _lookup(_state_codes, binary[20:24]),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
@@ -83,5 +78,4 @@ def encode(id: str, unit: int, state: bool, all: bool = False) -> str:
     encoded += "01010101"
     encoded += binary2pulses(_state_codes[state], binary2pulses_mapping)
     encoded += "02"
-    logger.debug(encoded)
     return encoded

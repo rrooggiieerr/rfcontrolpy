@@ -3,13 +3,10 @@
 Brands: Intertek 22541673 (e.g. Bauhaus).
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -55,14 +52,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 11100011111010111111110010 |   0 |     1 | 1101 |
     # | ID                         | All | State | Unit |
-    decoded = {
+    return {
         "id": int(binary[0:26], 2),
         "all": binary[26] == "1",
         "state": binary[27] == "1",
         "unit": int(binary[28:32], 2),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -83,5 +78,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     encoded += binary2pulses(f"{unit:04b}", binary2pulses_mapping)
     encoded += "03"
-    logger.debug(encoded)
     return encoded

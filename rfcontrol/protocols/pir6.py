@@ -3,13 +3,10 @@
 Brands: Zanbo (ZABC86-1), Unknown (OSW-1-3 and OTW-1-3).
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -57,9 +54,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # x: ignored
     # The original implementation reads one bit past the end (bits 2..24),
     # which shifts the ID left by one. A 0 is appended to stay compatible.
-    decoded = {
+    return {
         "id": int(binary[2:25], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded

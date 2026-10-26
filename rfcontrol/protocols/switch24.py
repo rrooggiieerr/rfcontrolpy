@@ -3,13 +3,10 @@
 Brands: Power remote 1204380, Steffen 1204380.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -55,13 +52,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string. The house code is sent inverted.
     # |     01110 | 00011 | 101001 |     1 | 00 |    00001 |
     # | HouseCode | ????? | ?????? | State | ?? | UnitCode |
-    decoded = {
+    return {
         "id": int(_invert(binary[0:5]), 2),
         "unit": int(binary[19:24], 2),
         "state": binary[16] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -82,5 +77,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += "0101"
     encoded += binary2pulses(f"{unit:05b}", binary2pulses_mapping)
     encoded += "02"
-    logger.debug(encoded)
     return encoded

@@ -1,12 +1,9 @@
 """Weather13 protocol: Xiron temperature and humidity sensor 2."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -38,14 +35,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
 
     Returns:
         Dict with ``id``, ``unit``, ``temperature``, ``humidity`` and
-        ``lowBattery``, or None if the pulses don't match the protocol or
-        can't be decoded.
+        ``lowBattery``, or None if the pulses don't match the protocol.
     """
     # We first map the pulse sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
 
     if binary is None or len(binary) < 36:
-        logger.debug("Failed to convert pulses to binary.")
         return None
 
     # Binary is now something like:
@@ -62,25 +57,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # C: Channel (2 bits + 1, 00=1, 01=2, 10=3)
     # x: Unused
 
-    try:
-        # Decode fields
-        device_id = int(binary[ID_START : ID_END + 1], 2)
-        low_battery = binary[LOW_BATTERY_BIT] == "1"
-        unit = int(binary[UNIT_START : UNIT_END + 1], 2) + 1
-        temperature = binary2signed(binary[TEMP_START : TEMP_END + 1]) / 10
-        humidity = int(binary[HUMIDITY_START : HUMIDITY_END + 1], 2)
-
-        decoded = {
-            "id": device_id,
-            "unit": unit,
-            "temperature": temperature,
-            "humidity": humidity,
-            "lowBattery": low_battery,
-        }
-
-        logger.debug("Decoded %s: %s", name, decoded)
-    except ValueError, IndexError:
-        logger.exception("Error decoding %s", name)
-        return None
-    else:
-        return decoded
+    return {
+        "id": int(binary[ID_START : ID_END + 1], 2),
+        "unit": int(binary[UNIT_START : UNIT_END + 1], 2) + 1,
+        "temperature": binary2signed(binary[TEMP_START : TEMP_END + 1]) / 10,
+        "humidity": int(binary[HUMIDITY_START : HUMIDITY_END + 1], 2),
+        "lowBattery": binary[LOW_BATTERY_BIT] == "1",
+    }

@@ -1,12 +1,9 @@
 """PIR4 protocol: SelectPlus doorbell, handled as a PIR sensor."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -46,10 +43,8 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # 11010011010100110101001100101010101
 
     # Now we extract the data from that string.
-    decoded = {
+    return {
         "id": int(binary[0:16], 2),
         "unit": int(binary[16:32], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded

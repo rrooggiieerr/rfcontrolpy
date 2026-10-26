@@ -3,13 +3,10 @@
 Brands: GS-IWDS07.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -55,13 +52,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 11101010100111000000 |       1 |     0 | 10 |
     # | ID                   | Battery | State | ?  |
     # Battery: 1 = OK, 0 = low.
-    decoded = {
+    return {
         "id": int(binary[:20], 2),
         "state": binary[21] == "1",
         "lowBattery": binary[20] != "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, state: bool, low_battery: bool = False) -> str:
@@ -80,5 +75,4 @@ def encode(id: int, state: bool, low_battery: bool = False) -> str:
     encoded += binary2pulses(f"{state:01b}", binary2pulses_mapping)
     encoded += "1001"
     encoded += "02"
-    logger.debug(encoded)
     return encoded

@@ -3,13 +3,10 @@
 Brands: Cogex, KlikAanKlikUit, Intertechno, Düwi Terminal.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -54,13 +51,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # |    10100 | 00010 |      0 |             0 |
     # |     Unit |    ID |  Fixed | Inverted State|
-    decoded = {
+    return {
         "id": int(binary[5:10], 2),
         "unit": int(binary[:5], 2),
         "state": binary[11] == "0",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -80,5 +75,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses_mapping["0"]
     encoded += binary2pulses_mapping["0"] if state else binary2pulses_mapping["1"]
     encoded += "02"
-    logger.debug(encoded)
     return encoded

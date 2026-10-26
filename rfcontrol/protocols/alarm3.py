@@ -6,13 +6,10 @@ The original implementation's encoder never worked (it returns the literal
 string ``"{unit}000102"``), so this protocol only supports decoding.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -50,9 +47,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
 
     # Now we extract the data from that string.
     # The ID is the first 24 bits.
-    decoded = {
+    return {
         "id": int(binary[0:24], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded

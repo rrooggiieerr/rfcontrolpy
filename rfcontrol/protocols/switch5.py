@@ -3,13 +3,10 @@
 Brands: Eurodomest.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -59,14 +56,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     all_units = unit_code not in [0, 1, 2, 4]
     state = (binary[23] == "1") if all_units else (binary[23] == "0")
 
-    decoded = {
+    return {
         "id": int(binary[0:20], 2),
         "unit": unit,
         "all": all_units,
         "state": state,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -91,5 +86,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses(f"{unit_code:03b}", binary2pulses_mapping)
     encoded += binary2pulses_mapping["0"] if state else binary2pulses_mapping["1"]
     encoded += "02"
-    logger.debug(encoded)
     return encoded

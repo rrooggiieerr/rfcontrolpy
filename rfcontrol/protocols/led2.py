@@ -6,13 +6,10 @@ Commands: ``on/off``, ``light``, ``bright+``, ``bright-``, ``100%``, ``50%``, ``
 Other command codes are decoded and can be sent as ``code:<8 bits>``.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -83,12 +80,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
         (c for c, code in _command_codes.items() if code == command_code),
         f"code:{command_code}",
     )
-    decoded = {
+    return {
         "id": int(binary[0:16], 2),
         "command": command,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, command: str) -> str:
@@ -114,5 +109,4 @@ def encode(id: int, command: str) -> str:
     encoded = binary2pulses(f"{id:016b}", binary2pulses_mapping)
     encoded += binary2pulses(command_code, binary2pulses_mapping)
     encoded += "02"
-    logger.debug(encoded)
     return encoded

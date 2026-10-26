@@ -3,13 +3,10 @@
 Every message carries either the temperature or the humidity.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -62,5 +59,4 @@ def decode(pulses: str) -> dict[str, Any] | None:
         decoded["temperature"] = ((p0 - 5) * 10) + p1 + (p2 * 0.1)
     else:
         decoded["humidity"] = p0 * 10 + p1
-    logger.debug(decoded)
     return decoded

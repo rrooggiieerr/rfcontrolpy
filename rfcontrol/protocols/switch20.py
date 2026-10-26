@@ -3,13 +3,10 @@
 Brands: MBO International Electronic GmbH.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -52,12 +49,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # | 001    | 0000      | 0              | 00   | 0              | 0    |
     # | header | Unit code | inverted state | zero | inverted state | zero |
     # The unit code is LSB first.
-    decoded = {
+    return {
         "unit": int(binary[3:7][::-1], 2),
         "state": binary[7] != "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(unit: int, state: bool, id: int = 0, all: bool = False) -> str:
@@ -78,5 +73,4 @@ def encode(unit: int, state: bool, id: int = 0, all: bool = False) -> str:
     encoded = f"{zero}{zero}{one}"
     encoded += binary2pulses(f"{unit:04b}"[::-1], binary2pulses_mapping)
     encoded += f"{inverse_state}{zero}{zero}{inverse_state}{zero}02"
-    logger.debug(encoded)
     return encoded

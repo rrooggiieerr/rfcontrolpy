@@ -8,13 +8,10 @@ always sends the same fixed code. Its own test in the original implementation
 fails.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -54,7 +51,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     if binary is None or len(binary) < 33:
         return None
 
-    decoded = {
+    return {
         "bits": binary,
         "bytes": [
             int(binary[offset : offset + 8], 2)
@@ -66,8 +63,6 @@ def decode(pulses: str) -> dict[str, Any] | None:
         "all": binary[14] == "1",
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int = 0, unit: int = 0, state: bool = True, all: bool = False) -> str:
@@ -85,5 +80,4 @@ def encode(id: int = 0, unit: int = 0, state: bool = True, all: bool = False) ->
     encoded = "0"
     encoded += binary2pulses("000011101000001100001111100001000", binary2pulses_mapping)
     encoded += "2"
-    logger.debug(encoded)
     return encoded

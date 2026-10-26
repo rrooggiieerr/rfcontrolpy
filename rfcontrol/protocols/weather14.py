@@ -1,12 +1,9 @@
 """Weather14 protocol: temperature and humidity sensor."""
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2signed, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -62,5 +59,4 @@ def decode(pulses: str) -> dict[str, Any] | None:
     humidity = int(binary[28:36], 2)
     if humidity != 0b11001100:
         decoded["humidity"] = humidity
-    logger.debug(decoded)
     return decoded

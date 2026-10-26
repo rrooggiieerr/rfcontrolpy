@@ -3,13 +3,10 @@
 Brands: Smarthome WP515S.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -49,12 +46,10 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 4 bits | 8 bits |
     # | ID     | Unit   |
-    decoded = {
+    return {
         "id": int(binary[0:4], 2),
         "unit": int(binary[4:12], 2),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool = True, all: bool = False) -> str:
@@ -73,5 +68,4 @@ def encode(id: int, unit: int, state: bool = True, all: bool = False) -> str:
     encoded += binary2pulses(f"{id:04b}", binary2pulses_mapping)
     encoded += binary2pulses(f"{unit:08b}", binary2pulses_mapping)
     encoded += "2"
-    logger.debug(encoded)
     return encoded

@@ -4,13 +4,10 @@ Brands: CoCo Technologies, D-IO (Chacon), Intertechno, KlikAanKlikUit, Nexa.
 Same frame as switch1 plus a 4-bit dim level.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -68,15 +65,13 @@ def decode(pulses: str) -> dict[str, Any] | None:
     if binary[27] != "N":
         state = binary[27] == "1"
 
-    decoded = {
+    return {
         "id": int(binary[:26], 2),
         "unit": int(binary[28:32], 2),
         "all": binary[26] == "1",
         "state": state,
         "dimlevel": int(binary[32:36], 2),
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(
@@ -116,5 +111,4 @@ def encode(
         # Without a dim level this is a plain on/off message, the same as switch1.
         encoded += binary2pulses(f"{dimlevel:04b}", binary2pulses_mapping)
     encoded += "03"
-    logger.debug(encoded)
     return encoded

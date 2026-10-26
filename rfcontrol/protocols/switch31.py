@@ -73,14 +73,12 @@ def decode(pulses: str) -> dict[str, Any] | None:
     state = binary[39] == "1"
     if not state:
         channel ^= 0xF
-    decoded = {
+    return {
         "id": id_,
         "unit": channel,
         "state": state,
         "all": channel == _ALL_CHANNELS,
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -106,5 +104,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses(id_bits, binary2pulses_mapping)
     encoded += binary2pulses(channel_bits, binary2pulses_mapping)
     encoded += "03"
-    logger.debug(encoded)
     return encoded

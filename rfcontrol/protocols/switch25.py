@@ -4,13 +4,10 @@ Brands: Lidl 0655B.
 Units: key 1 = 14, key 2 = 11, key 3 = 7, key 4 = 13, master = 0.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [["10", "1"], ["01", "0"], ["02", ""]]
@@ -55,9 +52,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # key '3' => 0111 which is a decimal 7
     # key '4' => 1101 which is a decimal 13
     # key 'master' => 0000 which is a decimal 0
-    decoded = {"id": 0, "unit": int(binary[25:29], 2), "state": binary[29] == "1"}
-    logger.debug(decoded)
-    return decoded
+    return {"id": 0, "unit": int(binary[25:29], 2), "state": binary[29] == "1"}
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -77,5 +72,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses_mapping["1"] if state else binary2pulses_mapping["0"]
     encoded += binary2pulses_mapping["0"] if state else binary2pulses_mapping["1"]
     encoded += "1002"
-    logger.debug(encoded)
     return encoded

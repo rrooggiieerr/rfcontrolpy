@@ -3,13 +3,10 @@
 Brands: eHome.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import binary2pulses, pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -56,13 +53,11 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # |     1 |  110 |  000 | 00000 |
     # | State | Unit |   ID | fixed |
     # Unit and ID are LSB first.
-    decoded = {
+    return {
         "id": int(binary[4:7][::-1], 2),
         "unit": int(binary[1:4][::-1], 2),
         "state": binary[0] == "1",
     }
-    logger.debug(decoded)
-    return decoded
 
 
 def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
@@ -81,5 +76,4 @@ def encode(id: int, unit: int, state: bool, all: bool = False) -> str:
     encoded += binary2pulses(f"{unit:03b}"[::-1], binary2pulses_mapping)
     encoded += binary2pulses(f"{id:03b}"[::-1], binary2pulses_mapping)
     encoded += "0110011001100110011002"
-    logger.debug(encoded)
     return encoded

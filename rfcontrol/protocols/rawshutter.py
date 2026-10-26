@@ -6,12 +6,9 @@ Only sending is supported. ``encode()`` sets the module's ``pulse_lengths`` to
 the recorded ones, so read them after encoding.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 name = "rawshutter"
 type = RFControlProtocolTypes.SHUTTER
@@ -55,8 +52,4 @@ def encode(
     """
     # Like the original implementation, remember the recorded pulse lengths.
     globals()["pulse_lengths"] = list(pulse_lengths)
-    pulses = {"up": pulses_up, "down": pulses_down, "stop": pulses_stop}.get(
-        command, ""
-    )
-    logger.debug(pulses)
-    return pulses
+    return {"up": pulses_up, "down": pulses_down, "stop": pulses_stop}.get(command, "")

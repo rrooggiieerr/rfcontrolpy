@@ -3,13 +3,10 @@
 Brands: Inter-Union.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -49,10 +46,8 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # 10010011000011100010101001101100
 
     # Now we extract the data from that string.
-    decoded = {
+    return {
         "id": int(binary[0:16], 2),
         "unit": int(binary[16:32], 2),
         "state": True,
     }
-    logger.debug(decoded)
-    return decoded

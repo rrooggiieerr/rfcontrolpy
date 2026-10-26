@@ -3,13 +3,10 @@
 Brands: Home Easy HE852.
 """
 
-import logging
 from typing import Any
 
 from rfcontrol.helpers import pulses2binary
 from rfcontrol.protocols import RFControlProtocolTypes
-
-logger = logging.getLogger(__name__)
 
 # Mapping for decoding.
 pulses2binary_mapping = [
@@ -44,9 +41,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # Now we extract the data from that string.
     # | 20 bits | 3 bits | 1 bit |
     # | ID      | ?      | State |
-    decoded = {
+    return {
         "id": int(binary[0:20], 2),
         "state": binary[23] == "1",
     }
-    logger.debug(decoded)
-    return decoded
