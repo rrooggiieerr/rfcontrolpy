@@ -4664,3 +4664,22 @@ def test_get_protocol_not_a_protocol() -> None:
     # Other names in the rfcontrol.protocols package are not protocols.
     assert controller.get_protocol("RFControlProtocolTypes") is None
     assert controller.get_protocol("Path") is None
+
+
+def test_get_all_protocols_returns_copy() -> None:
+    # Changing the returned list doesn't change the protocols that are used.
+    all_protocols = controller.get_all_protocols()
+    count = len(all_protocols)
+    all_protocols.clear()
+    assert len(controller.get_all_protocols()) == count
+
+
+def test_encode_pulses_returns_copy_of_pulse_lengths() -> None:
+    # Changing the returned pulse lengths doesn't change the protocol.
+    results = controller.encode_pulses(
+        "switch1", {"id": 98765, "unit": 4, "all": False, "state": True}
+    )
+    results["pulse_lengths"].append(0)
+    protocol = controller.get_protocol("switch1")
+    assert protocol is not None
+    assert protocol.pulse_lengths == [268, 1282, 2632, 10168]

@@ -240,12 +240,12 @@ def encode_pulses(protocol_name: str, message: dict[str, Any]) -> dict[str, Any]
     pulses = protocol.encode(**message)
     logger.debug("Protocol %s encoded %s: %s", protocol_name, message, pulses)
 
-    return {"pulses": pulses, "pulse_lengths": protocol.pulse_lengths}
+    return {"pulses": pulses, "pulse_lengths": protocol.pulse_lengths.copy()}
 
 
 def get_all_protocols() -> list[ModuleType]:
     """Get all implemented protocols."""
-    return protocols
+    return protocols.copy()
 
 
 def get_protocol(protocol_name: str) -> ModuleType | None:
