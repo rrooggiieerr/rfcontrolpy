@@ -77,12 +77,13 @@ def decode(pulses: str) -> dict[str, Any] | None:
     """Decode a pulse sequence.
 
     Args:
-        pulses: Pulse sequence as a string of pulse-length indexes.
+        pulses: Pulse sequence as a string of pulse-length indexes, for
             example ``"010101010102010201010101020102020102010101010101010201010202010201010101020101020101010201020101010102010102010101020102010101010201010201010103"``.
 
     Returns:
         Dict with ``id``, ``unit``, ``state`` and ``dimlevel``,
-        or None if the pulses don't match the protocol.
+        or None if the pulses don't match the protocol or contain an unknown
+        nibble code.
     """
     # We first map the sequences to binary.
     binary = pulses2binary(pulses, pulses2binary_mapping)
@@ -94,20 +95,24 @@ def decode(pulses: str) -> dict[str, Any] | None:
     # 11111010111101001011111110110010111101101110101111011011101011110110111
 
     # Now we extract the data from that string.
-    dimlevel = nibble_to_number(int(binary[1:8], 2)) * 16
-    dimlevel += nibble_to_number(int(binary[8:15], 2))
+    try:
+        dimlevel = nibble_to_number(int(binary[1:8], 2)) * 16
+        dimlevel += nibble_to_number(int(binary[8:15], 2))
 
-    unit_code = nibble_to_number(int(binary[15:22], 2))
+        unit_code = nibble_to_number(int(binary[15:22], 2))
 
-    nstate = nibble_to_number(int(binary[22:29], 2))
-    state = bool(nstate)
+        nstate = nibble_to_number(int(binary[22:29], 2))
+        state = bool(nstate)
 
-    remote_code = nibble_to_number(int(binary[29:36], 2)) * 1048576
-    remote_code += nibble_to_number(int(binary[36:43], 2)) * 65536
-    remote_code += nibble_to_number(int(binary[43:50], 2)) * 4096
-    remote_code += nibble_to_number(int(binary[50:57], 2)) * 256
-    remote_code += nibble_to_number(int(binary[57:64], 2)) * 16
-    remote_code += nibble_to_number(int(binary[64:71], 2))
+        remote_code = nibble_to_number(int(binary[29:36], 2)) * 1048576
+        remote_code += nibble_to_number(int(binary[36:43], 2)) * 65536
+        remote_code += nibble_to_number(int(binary[43:50], 2)) * 4096
+        remote_code += nibble_to_number(int(binary[50:57], 2)) * 256
+        remote_code += nibble_to_number(int(binary[57:64], 2)) * 16
+        remote_code += nibble_to_number(int(binary[64:71], 2))
+    except KeyError:
+        logger.debug("Unknown nibble code")
+        return None
 
     decoded = {
         "id": remote_code,
