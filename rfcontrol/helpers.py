@@ -51,3 +51,8 @@ def binary2signed(binary: str) -> int:
     if binary[0] == "1":
         number -= 1 << len(binary)
     return number
+
+
+def parity_bit(binary: str) -> bool:
+    """Return True if the binary value has an odd number of ones."""
+    return binary.count("1") % 2 == 1

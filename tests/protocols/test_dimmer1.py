@@ -61,3 +61,11 @@ def test_encode_without_dimlevel() -> None:
 def test_encode_without_state_and_dimlevel() -> None:
     with pytest.raises(ValueError, match="Either state or dimlevel is required"):
         dimmer1.encode(id=9565958, unit=0)
+
+
+def test_decode_invalid_dont_change_symbol() -> None:
+    # Only the state can be "N" (don't change); here the id contains it.
+    decoded = dimmer1.decode(
+        "0200000000000000000001000000010000000101000001000001000000000100000001000100010000000100000000000000000001010001000001010000010100010001000001010003"
+    )
+    assert decoded is None

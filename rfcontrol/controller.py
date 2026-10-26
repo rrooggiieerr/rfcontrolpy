@@ -48,7 +48,11 @@ def does_protocol_match(
     pulse_lengths: list[int], pulse_sequence: str, protocol: ModuleType
 ) -> bool:
     """Test if a protocol matches the pulse lengths and pulse sequence."""
-    if protocol.pulse_count != len(pulse_sequence):
+    pulse_counts = getattr(protocol, "pulse_counts", None)
+    if pulse_counts is not None:
+        if len(pulse_sequence) not in pulse_counts:
+            return False
+    elif protocol.pulse_count != len(pulse_sequence):
         return False
 
     if len(protocol.pulse_lengths) != len(pulse_lengths):
