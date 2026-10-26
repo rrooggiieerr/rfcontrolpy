@@ -12,10 +12,23 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
+def _natural_sort_key(name: str) -> tuple[str, int]:
+    """Sort key that puts e.g. switch2 before switch10."""
+    prefix = name.rstrip("0123456789")
+    return (prefix, int(name[len(prefix) :] or 0))
+
+
 protocols: list[ModuleType] = [
-    importlib.import_module(f"rfcontrol.protocols.{f.stem}")
-    for f in (Path(__file__).parent / "protocols").glob("*.py")
-    if f.is_file() and not f.name.startswith("_")
+    importlib.import_module(f"rfcontrol.protocols.{name}")
+    for name in sorted(
+        (
+            f.stem
+            for f in (Path(__file__).parent / "protocols").glob("*.py")
+            if f.is_file() and not f.name.startswith("_")
+        ),
+        key=_natural_sort_key,
+    )
 ]
 
 
