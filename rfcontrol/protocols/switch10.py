@@ -54,11 +54,7 @@ def decode(pulses: str) -> dict[str, Any] | None:
     groupcode1 = int(binary[43:47], 2)
     groupcode2 = int(binary[49:51], 2)
 
-    group_res = True
-    if groupcode1 == 11 and groupcode2 == 1:
-        group_res = False
-    elif groupcode1 == 12 and groupcode2 == 3:
-        group_res = True
+    group_res = not (groupcode1 == 11 and groupcode2 == 1)
 
     return {
         "id": int(binary[11:43], 2),
